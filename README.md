@@ -1,59 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# The Archaeoludic Archive
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A scholarly database cataloging video games that feature archaeology, cultural heritage, and ancient historical themes. This project aims to bridge the gap between game studies and archaeological research by providing a comprehensive, academically-oriented resource with linked open data integration.
 
-## About Laravel
+## About
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The Archaeoludic Archive addresses a gap in scholarly resources by creating a systematic classification of video games dealing with archaeological and ancient historical content. Unlike general gaming databases, this archive employs controlled vocabularies specifically designed for archaeological and cultural heritage themes, connecting games to academic literature and established archaeological thesauri.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Game Database**: Comprehensive catalog of archaeology and heritage-themed video games
+- **Controlled Vocabularies**: Specialized classification system including player roles, gameplay modes, and thematic categories
+- **API Integrations**: Automatic metadata retrieval from IGDB, Wikidata, Steam, and GOG
+- **Bibliography Management**: Zotero integration for scholarly citations in Harvard format
+- **Linked Open Data**: Connections to Getty AAT, PeriodO, and Wikidata
+- **User Roles**: Public browsing with authenticated editing for scholars
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Framework**: Laravel 11
+- **Styling**: Tailwind CSS
+- **Database**: MySQL
+- **APIs**: IGDB, Zotero, Wikidata, Steam, GOG
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### Requirements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.3+
+- Composer
+- Node.js & npm
+- MySQL
 
-### Premium Partners
+### Setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/archaeoludic-archive.git
+   cd archaeoludic-archive
+   ```
+
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+
+3. Install Node dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Create environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Configure your `.env` file with database credentials and API keys:
+   ```
+   DB_DATABASE=your_database
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+
+   IGDB_CLIENT_ID=your_igdb_client_id
+   IGDB_CLIENT_SECRET=your_igdb_client_secret
+   ```
+
+6. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
+
+7. Run database migrations:
+   ```bash
+   php artisan migrate
+   ```
+
+8. Build frontend assets:
+   ```bash
+   npm run build
+   ```
+
+9. Start the development server:
+   ```bash
+   php artisan serve
+   ```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+This project is currently in active development. If you're interested in contributing, please get in touch.
 
-## Code of Conduct
+## Author
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Sebastian Hageneuer  
+Berlin-Brandenburg Academy of Sciences and Humanities
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
