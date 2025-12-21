@@ -112,6 +112,14 @@
                                 <div class="mb-6">
                                     <h3 class="text-lg font-semibold text-[#313647] mb-2">Platforms</h3>
                                     <p class="text-[#435663]">{{ $game->igdb->platforms }}</p>
+                                    <p class="text-xs text-gray-400 mt-2">
+                                        Source:
+                                        @if ($game->igdb->slug)
+                                            <a href="{{ $game->igdb->slug }}" target="_blank" class="hover:underline">IGDB</a>
+                                        @else
+                                            IGDB
+                                        @endif
+                                    </p>
                                 </div>
                             @endif
 

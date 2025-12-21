@@ -13,6 +13,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/vocabulary', [VocabularyController::class, 'index'])->name('vocabulary');
 Route::get('/bibliography', [BibliographyController::class, 'index'])->name('bibliography');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::view('/imprint', 'imprint')->name('imprint');
+Route::view('/privacy', 'privacy')->name('privacy');
 
 // Öffentliche Games-Routen
 Route::get('/games', [GameController::class, 'index'])->name('games');
