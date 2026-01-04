@@ -10,14 +10,19 @@ class HomeController extends Controller
     public function index(IgdbService $igdbService)
     {
         // Statistiken
+        $vocabularyCount = DB::table('2_periods')->count()
+            + DB::table('2_places')->count()
+            + DB::table('2_gameplay_modes')->count()
+            + DB::table('2_player_roles')->count();
+
         $stats = [
             'games' => DB::table('1_games')->count(),
             'developers' => DB::table('1_developer')->count(),
             'citations' => DB::table('1_literature')->distinct('zotero_id')->count('zotero_id'),
-            'vocabularies' => DB::table('2_vocabulary')->count(),
+            'vocabularies' => $vocabularyCount,
         ];
 
-        // Die 6 neuesten Spiele mit allen nötigen Daten
+        // Die 5 neuesten Spiele mit allen nötigen Daten
         $latestGames = DB::table('1_games')
             ->leftJoin('1_literature', '1_games.game_id', '=', '1_literature.game_id')
             ->select(

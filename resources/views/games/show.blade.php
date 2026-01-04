@@ -144,6 +144,73 @@
                                 @endforelse
                             </div>
 
+                            <!-- Vocabulary Section -->
+                            @if ($periods->count() > 0 || $places->count() > 0 || $gameplayModes->count() > 0 || $playerRoles->count() > 0)
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-[#313647] mb-3">Classification</h3>
+
+                                    <!-- Periods -->
+                                    @if ($periods->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Periods:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($periods as $period)
+                                                    <a href="{{ route('periods.show', $period->id) }}"
+                                                       class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors">
+                                                        {{ $period->label_en }}
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Places -->
+                                    @if ($places->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Places:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($places as $place)
+                                                    <a href="{{ route('places.show', $place->id) }}"
+                                                       class="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition-colors">
+                                                        {{ $place->label_en }}
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Gameplay Modes -->
+                                    @if ($gameplayModes->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Gameplay Modes:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($gameplayModes as $mode)
+                                                    <a href="{{ route('gameplay-modes.show', $mode->id) }}"
+                                                       class="inline-flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm hover:bg-purple-200 transition-colors">
+                                                        {{ $mode->label_en }}
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Player Roles -->
+                                    @if ($playerRoles->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Player Roles:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($playerRoles as $role)
+                                                    <a href="{{ route('player-roles.show', $role->id) }}"
+                                                       class="inline-flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm hover:bg-orange-200 transition-colors">
+                                                        {{ $role->label_en }}
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+
                             <!-- Linked Open Data -->
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-[#313647] mb-2">Linked Open Data</h3>

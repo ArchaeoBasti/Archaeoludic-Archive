@@ -20,8 +20,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('vocabulary') }}" class="text-gray-300 hover:text-[#A3B087] transition-colors">
-                            Vocabulary
+                        <a href="{{ route('periods.index') }}" class="text-gray-300 hover:text-[#A3B087] transition-colors">
+                            Periods
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('places.index') }}" class="text-gray-300 hover:text-[#A3B087] transition-colors">
+                            Places
                         </a>
                     </li>
                     <li>

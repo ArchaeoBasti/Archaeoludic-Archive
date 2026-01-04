@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-archive-olive border-b border-gray-700">
+<nav x-data="{ open: false, vocabOpen: false }" class="bg-archive-olive border-b border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -11,16 +11,41 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
                     <x-nav-link :href="route('games')" :active="request()->routeIs('games')">
                         {{ __('Games') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('vocabulary')" :active="request()->routeIs('vocabulary*')">
-                        {{ __('Vocabulary') }}
-                    </x-nav-link>
+
+                    <!-- Vocabulary Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-300 hover:text-white focus:outline-none transition duration-150 ease-in-out {{ request()->routeIs('periods.*') || request()->routeIs('places.*') || request()->routeIs('gameplay-modes.*') || request()->routeIs('player-roles.*') ? 'border-b-2 border-[#A3B087]' : '' }}">
+                            {{ __('Vocabulary') }}
+                            <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-1">
+                                <a href="{{ route('periods.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Periods
+                                </a>
+                                <a href="{{ route('places.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Places
+                                </a>
+                                <a href="{{ route('gameplay-modes.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Gameplay Modes
+                                </a>
+                                <a href="{{ route('player-roles.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Player Roles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <x-nav-link :href="route('bibliography')" :active="request()->routeIs('bibliography')">
                         {{ __('Bibliography') }}
                     </x-nav-link>
@@ -99,9 +124,24 @@
             <x-responsive-nav-link :href="route('games')" :active="request()->routeIs('games')">
                 {{ __('Games') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('vocabulary')" :active="request()->routeIs('vocabulary*')">
-                {{ __('Vocabulary') }}
-            </x-responsive-nav-link>
+
+            <!-- Vocabulary Links (Mobile) -->
+            <div class="border-t border-gray-600 pt-2 mt-2">
+                <div class="px-4 py-1 text-xs font-semibold text-gray-400 uppercase">Vocabulary</div>
+                <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.*')">
+                    {{ __('Periods') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('places.index')" :active="request()->routeIs('places.*')">
+                    {{ __('Places') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('gameplay-modes.index')" :active="request()->routeIs('gameplay-modes.*')">
+                    {{ __('Gameplay Modes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('player-roles.index')" :active="request()->routeIs('player-roles.*')">
+                    {{ __('Player Roles') }}
+                </x-responsive-nav-link>
+            </div>
+
             <x-responsive-nav-link :href="route('bibliography')" :active="request()->routeIs('bibliography')">
                 {{ __('Bibliography') }}
             </x-responsive-nav-link>

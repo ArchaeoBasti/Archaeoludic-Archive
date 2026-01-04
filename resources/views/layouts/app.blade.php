@@ -16,6 +16,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-archive-slate flex flex-col">
@@ -38,5 +40,6 @@
             <!-- Footer -->
             @include('layouts.footer')
         </div>
+        @stack('scripts')
     </body>
 </html>

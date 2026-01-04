@@ -4,7 +4,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex justify-between items-center">
                 <h1 class="text-xl sm:text-2xl font-bold text-[#FFF8D4]">
-                    New Vocabulary Entry
+                    New Gameplay Mode
                 </h1>
             </div>
         </div>
@@ -17,7 +17,7 @@
                 <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span class="font-medium">Add a new term to the controlled vocabulary</span>
+                <span class="font-medium">Add a new gameplay mode to the vocabulary</span>
             </div>
         </div>
     </div>
@@ -27,41 +27,30 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg border border-gray-200">
                 <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('vocabulary.store') }}">
+                    <form method="POST" action="{{ route('gameplay-modes.store') }}">
                         @csrf
 
                         <div class="mb-4">
-                            <label for="voc_id" class="block text-sm font-medium text-[#313647]">ID</label>
-                            <input type="text" name="voc_id" id="voc_id" value="{{ $nextId }}" readonly
-                                   class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm text-gray-500">
+                            <label for="identifier" class="block text-sm font-medium text-[#313647]">Identifier</label>
+                            <input type="text" name="identifier" id="identifier" required placeholder="e.g. culturally-focussed"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                            <p class="text-sm text-[#435663] mt-1">Use lowercase with hyphens</p>
                         </div>
 
                         <div class="mb-4">
-                            <label for="term" class="block text-sm font-medium text-[#313647]">Term</label>
-                            <input type="text" name="term" id="term" required
+                            <label for="label_en" class="block text-sm font-medium text-[#313647]">Label (English)</label>
+                            <input type="text" name="label_en" id="label_en" required placeholder="e.g. Culturally Focussed"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
                         </div>
 
                         <div class="mb-4">
-                            <label for="description" class="block text-sm font-medium text-[#313647]">Description</label>
-                            <textarea name="description" id="description" rows="4"
+                            <label for="description_en" class="block text-sm font-medium text-[#313647]">Description (English)</label>
+                            <textarea name="description_en" id="description_en" rows="4"
                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]"></textarea>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="category" class="block text-sm font-medium text-[#313647]">Category</label>
-                            <input type="text" name="category" id="category" list="category-list"
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
-                            <datalist id="category-list">
-                                @foreach ($categories as $cat)
-                                    <option value="{{ $cat }}">
-                                @endforeach
-                            </datalist>
-                            <p class="text-sm text-[#435663] mt-1">Select existing or type new category</p>
-                        </div>
-
                         <div class="flex justify-between mt-6">
-                            <a href="{{ route('vocabulary') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-400 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+                            <a href="{{ route('gameplay-modes.index') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-400 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>

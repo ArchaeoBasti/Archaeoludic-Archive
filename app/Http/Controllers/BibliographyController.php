@@ -9,12 +9,14 @@ class BibliographyController extends Controller
 {
     // Manuell definierte Collections (Name => Collection-ID)
     protected $collections = [
-        'Introductions' => 'ZHFP2TQS',
-        'Game Analyses' => 'FUXVPQEY',
-        'Teaching' => 'L25QMPPT',
+        'Research on Archaeogaming' => 'ZHFP2TQS',
+        'The study of archaeology within video games' => 'FUXVPQEY',
+        'Teaching with Archaeogaming' => 'L25QMPPT',
+        'The study of physical video games' => 'WC2PJE39',
         'Orientalism' => 'I5ZLTVF9',
-        'Atmosphere' => '2M56D3XC',
-        'Hardware Archaeogaming' => 'WC2PJE39',
+        'Perception' => '2M56D3XC',
+        'Cultural Aspects' => '3EC6U2PM',
+        'Related Fields' => 'FY6YE833',
     ];
 
     public function index(ZoteroService $zoteroService)

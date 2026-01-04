@@ -6,6 +6,10 @@ use App\Services\ZoteroService;
 use App\Models\ZoteroCache;
 use App\Services\IgdbService;
 use Illuminate\Support\Facades\Http;
+use App\Models\Period;
+use App\Models\Place;
+use App\Models\GameplayMode;
+use App\Models\PlayerRole;
 
 class GameController extends Controller
 {
@@ -285,6 +289,10 @@ class GameController extends Controller
         // First delete related records (only the links, not the actual developers/literature)
         DB::table('1_game_developer')->where('game_id', $id)->delete();
         DB::table('1_literature')->where('game_id', $id)->delete();
+        DB::table('1_game_period')->where('game_id', $id)->delete();
+        DB::table('1_game_place')->where('game_id', $id)->delete();
+        DB::table('1_game_gameplay_mode')->where('game_id', $id)->delete();
+        DB::table('1_game_player_role')->where('game_id', $id)->delete();
 
         // Then delete the game
         DB::table('1_games')->where('game_id', $id)->delete();
@@ -310,6 +318,31 @@ class GameController extends Controller
             ->where('game_id', $id)
             ->get();
 
+        // Vocabulary data
+        $periods = DB::table('1_game_period')
+            ->join('2_periods', '1_game_period.period_id', '=', '2_periods.id')
+            ->where('1_game_period.game_id', $id)
+            ->select('2_periods.*')
+            ->get();
+
+        $places = DB::table('1_game_place')
+            ->join('2_places', '1_game_place.place_id', '=', '2_places.id')
+            ->where('1_game_place.game_id', $id)
+            ->select('2_places.*')
+            ->get();
+
+        $gameplayModes = DB::table('1_game_gameplay_mode')
+            ->join('2_gameplay_modes', '1_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
+            ->where('1_game_gameplay_mode.game_id', $id)
+            ->select('2_gameplay_modes.*')
+            ->get();
+
+        $playerRoles = DB::table('1_game_player_role')
+            ->join('2_player_roles', '1_game_player_role.player_role_id', '=', '2_player_roles.id')
+            ->where('1_game_player_role.game_id', $id)
+            ->select('2_player_roles.*')
+            ->get();
+
         // IGDB data
         if ($game->igdb_id) {
             $game->igdb = $igdbService->getGameById($game->igdb_id);
@@ -321,7 +354,7 @@ class GameController extends Controller
         $zoteroIds = $literature->pluck('zotero_id')->implode(', ');
         $game->citations = $this->buildCitations($zoteroIds, $zoteroService);
 
-        return view('games.show', compact('game', 'developers', 'literature'));
+        return view('games.show', compact('game', 'developers', 'literature', 'periods', 'places', 'gameplayModes', 'playerRoles'));
     }
 
     public function edit($id)
@@ -344,33 +377,67 @@ class GameController extends Controller
             ->where('game_id', $id)
             ->get();
 
-        $vocabularies = DB::table('1_game_vocabulary')
-            ->join('2_vocabulary', '1_game_vocabulary.voc_id', '=', '2_vocabulary.voc_id')
-            ->where('1_game_vocabulary.game_id', $id)
-            ->select('2_vocabulary.*')
+        // Current vocabulary assignments
+        $periods = DB::table('1_game_period')
+            ->join('2_periods', '1_game_period.period_id', '=', '2_periods.id')
+            ->where('1_game_period.game_id', $id)
+            ->select('2_periods.*')
             ->get();
 
-        $allVocabularies = DB::table('2_vocabulary')
-            ->orderBy('category')
-            ->orderBy('term')
+        $places = DB::table('1_game_place')
+            ->join('2_places', '1_game_place.place_id', '=', '2_places.id')
+            ->where('1_game_place.game_id', $id)
+            ->select('2_places.*')
             ->get();
 
-        return view('games.edit', compact('game', 'developers', 'allDevelopers', 'literature', 'vocabularies', 'allVocabularies'));
+        $gameplayModes = DB::table('1_game_gameplay_mode')
+            ->join('2_gameplay_modes', '1_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
+            ->where('1_game_gameplay_mode.game_id', $id)
+            ->select('2_gameplay_modes.*')
+            ->get();
+
+        $playerRoles = DB::table('1_game_player_role')
+            ->join('2_player_roles', '1_game_player_role.player_role_id', '=', '2_player_roles.id')
+            ->where('1_game_player_role.game_id', $id)
+            ->select('2_player_roles.*')
+            ->get();
+
+        // All vocabulary options
+        $allPeriods = Period::with('children.children')->whereNull('parent_id')->orderBy('start_year')->get();
+        $allPlaces = Place::with('children.children')->whereNull('parent_id')->orderBy('label_en')->get();
+        $allGameplayModes = GameplayMode::orderBy('label_en')->get();
+        $allPlayerRoles = PlayerRole::orderBy('label_en')->get();
+
+        return view('games.edit', compact(
+            'game',
+            'developers',
+            'allDevelopers',
+            'literature',
+            'periods',
+            'places',
+            'gameplayModes',
+            'playerRoles',
+            'allPeriods',
+            'allPlaces',
+            'allGameplayModes',
+            'allPlayerRoles'
+        ));
     }
 
-    public function addVocabulary(Request $request, $id)
+    // Period methods
+    public function addPeriod(Request $request, $id)
     {
-        $vocId = $request->input('voc_id');
+        $periodId = $request->input('period_id');
 
-        $exists = DB::table('1_game_vocabulary')
+        $exists = DB::table('1_game_period')
             ->where('game_id', $id)
-            ->where('voc_id', $vocId)
+            ->where('period_id', $periodId)
             ->exists();
 
         if (!$exists) {
-            DB::table('1_game_vocabulary')->insert([
+            DB::table('1_game_period')->insert([
                 'game_id' => $id,
-                'voc_id' => $vocId,
+                'period_id' => $periodId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -379,11 +446,107 @@ class GameController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function removeVocabulary($id, $vocId)
+    public function removePeriod($id, $periodId)
     {
-        DB::table('1_game_vocabulary')
+        DB::table('1_game_period')
             ->where('game_id', $id)
-            ->where('voc_id', $vocId)
+            ->where('period_id', $periodId)
+            ->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Place methods
+    public function addPlace(Request $request, $id)
+    {
+        $placeId = $request->input('place_id');
+
+        $exists = DB::table('1_game_place')
+            ->where('game_id', $id)
+            ->where('place_id', $placeId)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('1_game_place')->insert([
+                'game_id' => $id,
+                'place_id' => $placeId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removePlace($id, $placeId)
+    {
+        DB::table('1_game_place')
+            ->where('game_id', $id)
+            ->where('place_id', $placeId)
+            ->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Gameplay Mode methods
+    public function addGameplayMode(Request $request, $id)
+    {
+        $modeId = $request->input('gameplay_mode_id');
+
+        $exists = DB::table('1_game_gameplay_mode')
+            ->where('game_id', $id)
+            ->where('gameplay_mode_id', $modeId)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('1_game_gameplay_mode')->insert([
+                'game_id' => $id,
+                'gameplay_mode_id' => $modeId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removeGameplayMode($id, $modeId)
+    {
+        DB::table('1_game_gameplay_mode')
+            ->where('game_id', $id)
+            ->where('gameplay_mode_id', $modeId)
+            ->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Player Role methods
+    public function addPlayerRole(Request $request, $id)
+    {
+        $roleId = $request->input('player_role_id');
+
+        $exists = DB::table('1_game_player_role')
+            ->where('game_id', $id)
+            ->where('player_role_id', $roleId)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('1_game_player_role')->insert([
+                'game_id' => $id,
+                'player_role_id' => $roleId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removePlayerRole($id, $roleId)
+    {
+        DB::table('1_game_player_role')
+            ->where('game_id', $id)
+            ->where('player_role_id', $roleId)
             ->delete();
 
         return response()->json(['success' => true]);

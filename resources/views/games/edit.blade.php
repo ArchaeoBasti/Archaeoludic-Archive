@@ -201,44 +201,121 @@
                             </div>
                         </div>
 
+                        <!-- VOCABULARY SECTION -->
                         <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <h3 class="text-lg font-medium text-[#313647] mb-4">Vocabulary</h3>
 
-                            <!-- Current Vocabulary -->
-                            <div class="mb-4" id="vocabulary-list">
-                                @forelse ($vocabularies as $vocab)
-                                    <div class="flex justify-between items-center py-2 border-b border-gray-200" id="vocab-row-{{ $vocab->voc_id }}">
-                                        <div>
-                                            <span class="text-xs text-gray-400">{{ $vocab->voc_id }}</span>
-                                            <span class="font-medium text-[#313647] ml-2">{{ $vocab->term }}</span>
-                                            <span class="text-[#435663] text-sm ml-2">({{ $vocab->category }})</span>
+                            <!-- Periods -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Periods</h4>
+                                <div class="mb-2" id="periods-list">
+                                    @forelse ($periods as $period)
+                                        <div class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" id="period-row-{{ $period->id }}">
+                                            <span>{{ $period->label_en }}</span>
+                                            <button type="button" onclick="removePeriod({{ $period->id }})" class="ml-2 text-blue-600 hover:text-blue-800">✕</button>
                                         </div>
-                                        <button type="button" onclick="removeVocabulary('{{ $vocab->voc_id }}')" class="text-red-600 hover:text-red-800">
-                                            ✕
-                                        </button>
-                                    </div>
-                                @empty
-                                    <p class="text-gray-400" id="no-vocabulary">No vocabulary assigned</p>
-                                @endforelse
-                            </div>
-
-                            <!-- Add Vocabulary -->
-                            <div>
-                                <label class="block text-sm font-medium text-[#435663] mb-2">Add Vocabulary</label>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-periods">No periods assigned</p>
+                                    @endforelse
+                                </div>
                                 <div class="flex gap-2">
-                                    <select id="vocabulary_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
-                                        <option value="">-- Select --</option>
-                                        @foreach ($allVocabularies->groupBy('category') as $category => $vocabs)
-                                            <optgroup label="{{ $category ?: 'Uncategorized' }}">
-                                                @foreach ($vocabs as $vocab)
-                                                    <option value="{{ $vocab->voc_id }}" data-term="{{ $vocab->term }}" data-category="{{ $vocab->category }}">
-                                                        {{ $vocab->term }}
-                                                    </option>
+                                    <select id="period_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Period --</option>
+                                        @foreach ($allPeriods as $period)
+                                            <option value="{{ $period->id }}">{{ $period->label_en }}</option>
+                                            @foreach ($period->children as $child)
+                                                <option value="{{ $child->id }}">&nbsp;&nbsp;&nbsp;└ {{ $child->label_en }}</option>
+                                                @foreach ($child->children as $grandchild)
+                                                    <option value="{{ $grandchild->id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ {{ $grandchild->label_en }}</option>
                                                 @endforeach
-                                            </optgroup>
+                                            @endforeach
                                         @endforeach
                                     </select>
-                                    <button type="button" onclick="addVocabulary()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                    <button type="button" onclick="addPeriod()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Places -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Places</h4>
+                                <div class="mb-2" id="places-list">
+                                    @forelse ($places as $place)
+                                        <div class="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" id="place-row-{{ $place->id }}">
+                                            <span>{{ $place->label_en }}</span>
+                                            <button type="button" onclick="removePlace({{ $place->id }})" class="ml-2 text-green-600 hover:text-green-800">✕</button>
+                                        </div>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-places">No places assigned</p>
+                                    @endforelse
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="place_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Place --</option>
+                                        @foreach ($allPlaces as $place)
+                                            <option value="{{ $place->id }}">{{ $place->label_en }}</option>
+                                            @foreach ($place->children as $child)
+                                                <option value="{{ $child->id }}">&nbsp;&nbsp;&nbsp;└ {{ $child->label_en }}</option>
+                                                @foreach ($child->children as $grandchild)
+                                                    <option value="{{ $grandchild->id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ {{ $grandchild->label_en }}</option>
+                                                @endforeach
+                                            @endforeach
+                                        @endforeach
+                                    </select>
+                                    <button type="button" onclick="addPlace()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Gameplay Modes -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Gameplay Modes</h4>
+                                <div class="mb-2" id="gameplay-modes-list">
+                                    @forelse ($gameplayModes as $mode)
+                                        <div class="inline-flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" id="mode-row-{{ $mode->id }}">
+                                            <span>{{ $mode->label_en }}</span>
+                                            <button type="button" onclick="removeGameplayMode({{ $mode->id }})" class="ml-2 text-purple-600 hover:text-purple-800">✕</button>
+                                        </div>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-gameplay-modes">No gameplay modes assigned</p>
+                                    @endforelse
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="gameplay_mode_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Gameplay Mode --</option>
+                                        @foreach ($allGameplayModes as $mode)
+                                            <option value="{{ $mode->id }}">{{ $mode->label_en }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" onclick="addGameplayMode()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Player Roles -->
+                            <div>
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Player Roles</h4>
+                                <div class="mb-2" id="player-roles-list">
+                                    @forelse ($playerRoles as $role)
+                                        <div class="inline-flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" id="role-row-{{ $role->id }}">
+                                            <span>{{ $role->label_en }}</span>
+                                            <button type="button" onclick="removePlayerRole({{ $role->id }})" class="ml-2 text-orange-600 hover:text-orange-800">✕</button>
+                                        </div>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-player-roles">No player roles assigned</p>
+                                    @endforelse
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="player_role_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Player Role --</option>
+                                        @foreach ($allPlayerRoles as $role)
+                                            <option value="{{ $role->id }}">{{ $role->label_en }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" onclick="addPlayerRole()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
                                         Add
                                     </button>
                                 </div>
@@ -278,6 +355,7 @@
         const gameId = {{ $game->game_id }};
         const csrfToken = '{{ csrf_token() }}';
 
+        // IGDB Search
         async function searchIgdb() {
             const title = document.getElementById('title').value;
             const resultsDiv = document.getElementById('igdb-results');
@@ -321,6 +399,7 @@
             document.getElementById('igdb-results').classList.add('hidden');
         }
 
+        // Wikidata Search
         async function searchWikidata() {
             const title = document.getElementById('title').value;
             const resultsDiv = document.getElementById('wikidata-results');
@@ -364,12 +443,13 @@
             document.getElementById('wikidata-results').classList.add('hidden');
         }
 
+        // Developer functions
         async function addDeveloper() {
             const select = document.getElementById('developer_select');
-            const developerId = select.value;
-            const developerName = select.options[select.selectedIndex].text;
+            const devId = select.value;
+            const devName = select.options[select.selectedIndex].text;
 
-            if (!developerId) {
+            if (!devId) {
                 alert('Please select a developer');
                 return;
             }
@@ -381,46 +461,43 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken
                     },
-                    body: JSON.stringify({ developer_id: developerId })
+                    body: JSON.stringify({ developer_id: devId })
                 });
 
                 if (response.ok) {
                     const list = document.getElementById('developer-list');
-                    const noDevs = document.getElementById('no-developers');
-                    if (noDevs) noDevs.remove();
+                    const noDev = document.getElementById('no-developers');
+                    if (noDev) noDev.remove();
 
                     const newRow = document.createElement('div');
                     newRow.className = 'flex justify-between items-center py-2 border-b border-gray-200';
-                    newRow.id = `dev-row-${developerId}`;
+                    newRow.id = `dev-row-${devId}`;
                     newRow.innerHTML = `
-                        <div><span class="font-medium text-[#313647]">${developerName}</span></div>
-                        <button type="button" onclick="removeDeveloper(${developerId})" class="text-red-600 hover:text-red-800">✕</button>
+                        <div><span class="font-medium text-[#313647]">${devName}</span></div>
+                        <button type="button" onclick="removeDeveloper(${devId})" class="text-red-600 hover:text-red-800">✕</button>
                     `;
                     list.appendChild(newRow);
-
                     select.value = '';
                 }
             } catch (error) {
-                alert('Error during adding');
+                alert('Error adding developer');
             }
         }
 
-        async function removeDeveloper(developerId) {
+        async function removeDeveloper(devId) {
             if (!confirm('Remove developer?')) return;
 
             try {
-                const response = await fetch(`{{ url('/games') }}/${gameId}/developer/${developerId}`, {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/developer/${devId}`, {
                     method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
                 });
 
                 if (response.ok) {
-                    document.getElementById(`dev-row-${developerId}`).remove();
+                    document.getElementById(`dev-row-${devId}`).remove();
                 }
             } catch (error) {
-                alert('Error during removal');
+                alert('Error removing developer');
             }
         }
 
@@ -431,12 +508,12 @@
             const status = document.getElementById('dev-create-status');
 
             if (!name) {
-                alert('Enter a name');
+                alert('Please enter a name');
                 return;
             }
 
             try {
-                const response = await fetch('{{ route('developer.create') }}', {
+                const response = await fetch('{{ route('developer.store') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -445,32 +522,36 @@
                     body: JSON.stringify({ name, website, wikidata_id: wikidata })
                 });
 
-                const result = await response.json();
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('developer_select');
+                    const option = document.createElement('option');
+                    option.value = data.id;
+                    option.text = data.name;
+                    select.add(option);
+                    select.value = data.id;
 
-                const select = document.getElementById('developer_select');
-                const option = new Option(result.name, result.id);
-                select.add(option);
-                select.value = result.id;
+                    document.getElementById('new_dev_name').value = '';
+                    document.getElementById('new_dev_website').value = '';
+                    document.getElementById('new_dev_wikidata').value = '';
 
-                document.getElementById('new_dev_name').value = '';
-                document.getElementById('new_dev_website').value = '';
-                document.getElementById('new_dev_wikidata').value = '';
-
-                status.textContent = '✓ Developer created!';
-                status.className = 'ml-2 text-sm text-green-600';
-
+                    status.textContent = '✓ Created!';
+                    status.className = 'ml-2 text-sm text-green-600';
+                    setTimeout(() => { status.textContent = ''; }, 3000);
+                }
             } catch (error) {
-                status.textContent = 'Error during creation';
+                status.textContent = 'Error';
                 status.className = 'ml-2 text-sm text-red-600';
             }
         }
 
+        // Zotero/Literature functions
         async function searchZotero() {
             const query = document.getElementById('zotero_search').value;
             const resultsDiv = document.getElementById('zotero-results');
 
             if (!query) {
-                alert('Please enter a search term');
+                alert('Enter search term');
                 return;
             }
 
@@ -492,7 +573,7 @@
                         <div class="p-2 hover:bg-gray-100 cursor-pointer border-b" onclick="addLiterature('${item.key}', '${item.authors} (${item.year})')">
                             <span class="font-medium">${item.title}</span>
                             <div class="text-gray-500 text-sm">${item.authors} (${item.year})</div>
-                            <span class="text-gray-400 text-xs">ID: ${item.key}</span>
+                            <span class="text-gray-400 text-xs">${item.key}</span>
                         </div>
                     `;
                 });
@@ -542,9 +623,7 @@
             try {
                 const response = await fetch(`{{ url('/games') }}/${gameId}/literature/${literatureId}`, {
                     method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
                 });
 
                 if (response.ok) {
@@ -555,17 +634,228 @@
             }
         }
 
+        // Period functions
+        async function addPeriod() {
+            const select = document.getElementById('period_select');
+            const periodId = select.value;
+            const label = select.options[select.selectedIndex].text.trim().replace('↳ ', '');
+
+            if (!periodId) {
+                alert('Please select a period');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/periods`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ period_id: periodId })
+                });
+
+                if (response.ok) {
+                    const list = document.getElementById('periods-list');
+                    const noPeriods = document.getElementById('no-periods');
+                    if (noPeriods) noPeriods.remove();
+
+                    const newTag = document.createElement('div');
+                    newTag.className = 'inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2 mb-2';
+                    newTag.id = `period-row-${periodId}`;
+                    newTag.innerHTML = `<span>${label}</span><button type="button" onclick="removePeriod(${periodId})" class="ml-2 text-blue-600 hover:text-blue-800">✕</button>`;
+                    list.appendChild(newTag);
+                    select.value = '';
+                }
+            } catch (error) {
+                alert('Error adding period');
+            }
+        }
+
+        async function removePeriod(periodId) {
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/periods/${periodId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
+                });
+
+                if (response.ok) {
+                    document.getElementById(`period-row-${periodId}`).remove();
+                }
+            } catch (error) {
+                alert('Error removing period');
+            }
+        }
+
+        // Place functions
+        async function addPlace() {
+            const select = document.getElementById('place_select');
+            const placeId = select.value;
+            const label = select.options[select.selectedIndex].text.trim().replace('↳ ', '');
+
+            if (!placeId) {
+                alert('Please select a place');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/places`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ place_id: placeId })
+                });
+
+                if (response.ok) {
+                    const list = document.getElementById('places-list');
+                    const noPlaces = document.getElementById('no-places');
+                    if (noPlaces) noPlaces.remove();
+
+                    const newTag = document.createElement('div');
+                    newTag.className = 'inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2 mb-2';
+                    newTag.id = `place-row-${placeId}`;
+                    newTag.innerHTML = `<span>${label}</span><button type="button" onclick="removePlace(${placeId})" class="ml-2 text-green-600 hover:text-green-800">✕</button>`;
+                    list.appendChild(newTag);
+                    select.value = '';
+                }
+            } catch (error) {
+                alert('Error adding place');
+            }
+        }
+
+        async function removePlace(placeId) {
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/places/${placeId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
+                });
+
+                if (response.ok) {
+                    document.getElementById(`place-row-${placeId}`).remove();
+                }
+            } catch (error) {
+                alert('Error removing place');
+            }
+        }
+
+        // Gameplay Mode functions
+        async function addGameplayMode() {
+            const select = document.getElementById('gameplay_mode_select');
+            const modeId = select.value;
+            const label = select.options[select.selectedIndex].text;
+
+            if (!modeId) {
+                alert('Please select a gameplay mode');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/gameplay-modes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ gameplay_mode_id: modeId })
+                });
+
+                if (response.ok) {
+                    const list = document.getElementById('gameplay-modes-list');
+                    const noModes = document.getElementById('no-gameplay-modes');
+                    if (noModes) noModes.remove();
+
+                    const newTag = document.createElement('div');
+                    newTag.className = 'inline-flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2';
+                    newTag.id = `mode-row-${modeId}`;
+                    newTag.innerHTML = `<span>${label}</span><button type="button" onclick="removeGameplayMode(${modeId})" class="ml-2 text-purple-600 hover:text-purple-800">✕</button>`;
+                    list.appendChild(newTag);
+                    select.value = '';
+                }
+            } catch (error) {
+                alert('Error adding gameplay mode');
+            }
+        }
+
+        async function removeGameplayMode(modeId) {
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/gameplay-modes/${modeId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
+                });
+
+                if (response.ok) {
+                    document.getElementById(`mode-row-${modeId}`).remove();
+                }
+            } catch (error) {
+                alert('Error removing gameplay mode');
+            }
+        }
+
+        // Player Role functions
+        async function addPlayerRole() {
+            const select = document.getElementById('player_role_select');
+            const roleId = select.value;
+            const label = select.options[select.selectedIndex].text;
+
+            if (!roleId) {
+                alert('Please select a player role');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/player-roles`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ player_role_id: roleId })
+                });
+
+                if (response.ok) {
+                    const list = document.getElementById('player-roles-list');
+                    const noRoles = document.getElementById('no-player-roles');
+                    if (noRoles) noRoles.remove();
+
+                    const newTag = document.createElement('div');
+                    newTag.className = 'inline-flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm mr-2 mb-2';
+                    newTag.id = `role-row-${roleId}`;
+                    newTag.innerHTML = `<span>${label}</span><button type="button" onclick="removePlayerRole(${roleId})" class="ml-2 text-orange-600 hover:text-orange-800">✕</button>`;
+                    list.appendChild(newTag);
+                    select.value = '';
+                }
+            } catch (error) {
+                alert('Error adding player role');
+            }
+        }
+
+        async function removePlayerRole(roleId) {
+            try {
+                const response = await fetch(`{{ url('/games') }}/${gameId}/player-roles/${roleId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
+                });
+
+                if (response.ok) {
+                    document.getElementById(`role-row-${roleId}`).remove();
+                }
+            } catch (error) {
+                alert('Error removing player role');
+            }
+        }
+
+        // Delete Game
         async function deleteGame() {
-            if (!confirm('Are you sure you want to delete this game? The links to developers and literature will be removed, but the developers and literature entries themselves will remain in the database.')) {
+            if (!confirm('Are you sure you want to delete this game? All links will be removed.')) {
                 return;
             }
 
             try {
                 const response = await fetch(`{{ url('/games') }}/${gameId}`, {
                     method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+                    headers: { 'X-CSRF-TOKEN': csrfToken }
                 });
 
                 if (response.ok || response.redirected) {
@@ -573,72 +863,6 @@
                 }
             } catch (error) {
                 alert('Error deleting game');
-            }
-        }
-
-        async function addVocabulary() {
-            const select = document.getElementById('vocabulary_select');
-            const vocId = select.value;
-            const selectedOption = select.options[select.selectedIndex];
-            const term = selectedOption.dataset.term;
-            const category = selectedOption.dataset.category;
-
-            if (!vocId) {
-                alert('Please select a vocabulary entry');
-                return;
-            }
-
-            try {
-                const response = await fetch(`{{ url('/games') }}/${gameId}/vocabulary`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({ voc_id: vocId })
-                });
-
-                if (response.ok) {
-                    const list = document.getElementById('vocabulary-list');
-                    const noVocab = document.getElementById('no-vocabulary');
-                    if (noVocab) noVocab.remove();
-
-                    const newRow = document.createElement('div');
-                    newRow.className = 'flex justify-between items-center py-2 border-b border-gray-200';
-                    newRow.id = `vocab-row-${vocId}`;
-                    newRow.innerHTML = `
-                        <div>
-                            <span class="text-xs text-gray-400">${vocId}</span>
-                            <span class="font-medium text-[#313647] ml-2">${term}</span>
-                            <span class="text-[#435663] text-sm ml-2">(${category})</span>
-                        </div>
-                        <button type="button" onclick="removeVocabulary('${vocId}')" class="text-red-600 hover:text-red-800">✕</button>
-                    `;
-                    list.appendChild(newRow);
-
-                    select.value = '';
-                }
-            } catch (error) {
-                alert('Error adding vocabulary');
-            }
-        }
-
-        async function removeVocabulary(vocId) {
-            if (!confirm('Remove this vocabulary entry?')) return;
-
-            try {
-                const response = await fetch(`{{ url('/games') }}/${gameId}/vocabulary/${vocId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    }
-                });
-
-                if (response.ok) {
-                    document.getElementById(`vocab-row-${vocId}`).remove();
-                }
-            } catch (error) {
-                alert('Error removing vocabulary');
             }
         }
     </script>

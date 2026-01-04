@@ -10,18 +10,6 @@
         </div>
     </div>
 
-    <!-- Gelber Streifen -->
-    <div class="bg-[#FFF8D4] py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-2 text-[#313647]">
-                <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span class="font-medium">About the project and its creator</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Hauptinhalt -->
     <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
