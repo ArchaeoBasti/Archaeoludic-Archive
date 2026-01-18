@@ -102,6 +102,43 @@
                             </div>
                         </div>
 
+                        <div class="mb-4">
+                            <label for="color" class="block text-sm font-medium text-[#313647]">Color (for Top-Level only)</label>
+                            <div class="flex items-center gap-3 mt-1">
+                                <input type="color" name="color" id="color" value="{{ $period->color ?? '#313647' }}"
+                                       class="h-10 w-20 rounded border-gray-300 cursor-pointer">
+                                <input type="text" id="color_hex" value="{{ $period->color ?? '#313647' }}" maxlength="7"
+                                       class="w-24 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087] font-mono text-sm"
+                                       oninput="document.getElementById('color').value = this.value">
+                                <span class="text-sm text-[#435663]">Only applies to top-level periods</span>
+                            </div>
+                            <script>
+                                document.getElementById('color').addEventListener('input', function() {
+                                    document.getElementById('color_hex').value = this.value;
+                                });
+                            </script>
+                        </div>
+
+                        <!-- Linked Open Data -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Linked Open Data</h3>
+
+                            @include('partials.lod-field', [
+                                'name' => 'wikidata',
+                                'label' => 'Wikidata',
+                                'value' => $period->wikidata_id,
+                                'mappingValue' => $period->wikidata_mapping,
+                                'mappingTypes' => $mappingTypes,
+                                'urlPrefix' => 'https://www.wikidata.org/wiki/',
+                                'placeholder' => 'e.g. Q11764'
+                            ])
+                        </div>
+
+                        <!-- Alternative Names -->
+                        @include('partials.alternative-names', [
+                            'alternativeNames' => $period->alternativeNames
+                        ])
+
                         <div class="flex justify-between mt-6">
                             <div class="flex space-x-4">
                                 <a href="{{ route('periods.index') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-400 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">

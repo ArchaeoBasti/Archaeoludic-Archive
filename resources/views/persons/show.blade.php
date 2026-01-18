@@ -2,9 +2,9 @@
     <div class="bg-gradient-to-br from-[#313647] to-[#435663]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex justify-between items-center">
-                <h1 class="text-xl sm:text-2xl font-bold text-[#FFF8D4]">{{ $place->label_en }}</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-[#FFF8D4]">{{ $person->label_en }}</h1>
                 @auth
-                    <a href="{{ route('places.edit', $place) }}" class="inline-flex items-center px-6 py-3 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4]">
+                    <a href="{{ route('persons.edit', $person) }}" class="inline-flex items-center px-6 py-3 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4]">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -22,16 +22,19 @@
                     <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                     </svg>
-                    <span class="font-medium">{{ $place->identifier }}</span>
+                    <span class="font-medium">{{ $person->identifier }}</span>
                 </div>
-                @if ($place->latitude && $place->longitude)
-                    <a href="https://www.openstreetmap.org/?mlat={{ $place->latitude }}&mlon={{ $place->longitude }}&zoom=10" target="_blank" class="flex items-center gap-2 text-[#435663] hover:text-[#313647] transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                @if ($person->birth_year || $person->death_year)
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span>{{ $place->latitude }}, {{ $place->longitude }}</span>
-                    </a>
+                        <span class="font-medium">
+                            {{ $person->birth_year ? ($person->birth_year < 0 ? abs($person->birth_year) . ' BCE' : $person->birth_year) : '?' }}
+                            –
+                            {{ $person->death_year ? ($person->death_year < 0 ? abs($person->death_year) . ' BCE' : $person->death_year) : '?' }}
+                        </span>
+                    </div>
                 @endif
             </div>
         </div>
@@ -43,19 +46,19 @@
                 <div class="p-6">
 
                     <!-- Description -->
-                    @if ($place->description_en)
+                    @if ($person->description_en)
                         <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-[#313647] mb-2">Description</h3>
-                            <p class="text-[#435663]">{{ $place->description_en }}</p>
+                            <h3 class="text-lg font-semibold text-[#313647] mb-2">Biography</h3>
+                            <p class="text-[#435663]">{{ $person->description_en }}</p>
                         </div>
                     @endif
 
                     <!-- Alternative Names -->
-                    @if ($place->alternativeNames && $place->alternativeNames->count() > 0)
+                    @if ($person->alternativeNames && $person->alternativeNames->count() > 0)
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Alternative Names</h3>
                             <div class="flex flex-wrap gap-2">
-                                @foreach ($place->alternativeNames as $altName)
+                                @foreach ($person->alternativeNames as $altName)
                                     <span class="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
                                         {{ $altName->name }}
                                         <span class="ml-1 text-xs text-gray-500">({{ $altName->language }})</span>
@@ -65,36 +68,12 @@
                         </div>
                     @endif
 
-                    <!-- Parent Place -->
-                    @if ($place->parent)
-                        <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-[#313647] mb-2">Parent Place</h3>
-                            <a href="{{ route('places.show', $place->parent) }}" class="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition-colors">
-                                {{ $place->parent->label_en }}
-                            </a>
-                        </div>
-                    @endif
-
-                    <!-- Child Places -->
-                    @if ($place->children->count() > 0)
-                        <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Sub-Places</h3>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach ($place->children->sortBy('label_en') as $child)
-                                    <a href="{{ route('places.show', $child) }}" class="inline-flex items-center bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm hover:bg-green-200 transition-colors">
-                                        {{ $child->label_en }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
                     <!-- Games -->
-                    @if ($place->games->count() > 0)
+                    @if ($person->games->count() > 0)
                         <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Games ({{ $place->games->count() }})</h3>
+                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Games ({{ $person->games->count() }})</h3>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                                @foreach ($place->games as $game)
+                                @foreach ($person->games as $game)
                                     <a href="{{ route('games.show', $game->game_id) }}" class="group">
                                         <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                                             @if ($game->igdb && $game->igdb->cover_url)
@@ -123,35 +102,54 @@
                     @endif
 
                     <!-- Linked Open Data -->
-                    @if ($place->tgn_id)
+                    @if ($person->gnd_id || $person->wikidata_id)
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Linked Open Data</h3>
                             <div class="space-y-2">
-                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                    <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-[#313647]">Getty TGN</span>
-                                    @if ($place->tgn_mapping)
-                                        <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $place->tgn_mapping }}</span>
-                                    @endif
-                                    <a href="http://vocab.getty.edu/tgn/{{ $place->tgn_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
-                                        {{ $place->tgn_id }}
-                                        <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                @if ($person->gnd_id)
+                                    <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                        <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                                         </svg>
-                                    </a>
-                                </div>
+                                        <span class="text-sm font-medium text-[#313647]">GND</span>
+                                        @if ($person->gnd_mapping)
+                                            <span class="text-xs font-mono bg-green-100 text-green-800 px-2 py-1 rounded">{{ $person->gnd_mapping }}</span>
+                                        @endif
+                                        <a href="https://d-nb.info/gnd/{{ $person->gnd_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+                                            {{ $person->gnd_id }}
+                                            <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                @endif
+                                @if ($person->wikidata_id)
+                                    <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                        <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                        </svg>
+                                        <span class="text-sm font-medium text-[#313647]">Wikidata</span>
+                                        @if ($person->wikidata_mapping)
+                                            <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $person->wikidata_mapping }}</span>
+                                        @endif
+                                        <a href="https://www.wikidata.org/wiki/{{ $person->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
+                                            {{ $person->wikidata_id }}
+                                            <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endif
 
                     <div class="mt-6">
-                        <a href="{{ route('places.index') }}" class="inline-flex items-center text-[#435663] hover:text-[#313647]">
+                        <a href="{{ route('persons.index') }}" class="inline-flex items-center text-[#435663] hover:text-[#313647]">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                             </svg>
-                            Back to Places
+                            Back to Historical Persons
                         </a>
                     </div>
                 </div>

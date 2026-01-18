@@ -31,23 +31,33 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="mb-4">
-                            <label for="identifier" class="block text-sm font-medium text-[#313647]">Identifier</label>
-                            <input type="text" name="identifier" id="identifier" value="{{ $gameplayMode->identifier }}" required
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                        <!-- Basic Information -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Basic Information</h3>
+
+                            <div class="mb-4">
+                                <label for="identifier" class="block text-sm font-medium text-[#313647]">Identifier</label>
+                                <input type="text" name="identifier" id="identifier" value="{{ $gameplayMode->identifier }}" required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="label_en" class="block text-sm font-medium text-[#313647]">Label (English)</label>
+                                <input type="text" name="label_en" id="label_en" value="{{ $gameplayMode->label_en }}" required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="description_en" class="block text-sm font-medium text-[#313647]">Description (English)</label>
+                                <textarea name="description_en" id="description_en" rows="4"
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">{{ $gameplayMode->description_en }}</textarea>
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="label_en" class="block text-sm font-medium text-[#313647]">Label (English)</label>
-                            <input type="text" name="label_en" id="label_en" value="{{ $gameplayMode->label_en }}" required
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="description_en" class="block text-sm font-medium text-[#313647]">Description (English)</label>
-                            <textarea name="description_en" id="description_en" rows="4"
-                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">{{ $gameplayMode->description_en }}</textarea>
-                        </div>
+                        <!-- Alternative Names -->
+                        @include('partials.alternative-names', [
+                            'alternativeNames' => $gameplayMode->alternativeNames
+                        ])
 
                         <div class="flex justify-between mt-6">
                             <div class="flex space-x-4">

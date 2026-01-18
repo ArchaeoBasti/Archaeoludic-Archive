@@ -88,7 +88,10 @@
                                 <span class="flex items-center gap-3">
                                     {{ $place->label_en }}
                                     <span class="text-sm font-normal text-gray-500">
-                                        ({{ $place->children->count() + 1 }} {{ $place->children->count() + 1 === 1 ? 'entry' : 'entries' }})
+                                        @php
+                                            $totalCount = 1 + $place->children->count() + $place->children->sum(fn($child) => $child->children->count());
+                                        @endphp
+                                        ({{ $totalCount }} {{ $totalCount === 1 ? 'entry' : 'entries' }})
                                     </span>
                                 </span>
                                 <svg

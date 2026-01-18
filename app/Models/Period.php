@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Period extends Model
 {
@@ -21,6 +20,9 @@ class Period extends Model
         'end_year',
         'start_uncertain',
         'end_uncertain',
+        'color',
+        'wikidata_id',
+        'wikidata_mapping',
     ];
 
     protected $casts = [
@@ -40,12 +42,21 @@ class Period extends Model
 
     public function games(): BelongsToMany
     {
-        return $this->belongsToMany(Game::class, '1_game_period', 'period_id', 'game_id')
+        return $this->belongsToMany(Game::class, '3_pivot_game_period', 'period_id', 'game_id')
                     ->withTimestamps();
     }
 
-    public function mappings(): MorphMany
+    public function alternativeNames(): HasMany
     {
-        return $this->morphMany(VocabularyMapping::class, 'concept');
+        return $this->hasMany(AlternativeName::class, 'vocabulary_id')
+                    ->where('vocabulary_type', 'period');
+    }
+
+    /**
+     * Get the Wikidata URL
+     */
+    public function getWikidataUrlAttribute(): ?string
+    {
+        return $this->wikidata_id ? "https://www.wikidata.org/wiki/{$this->wikidata_id}" : null;
     }
 }

@@ -42,7 +42,11 @@
                             <div class="flex justify-between items-start p-4 bg-gray-50 rounded-lg border border-gray-200">
                                 <div>
                                     <span class="text-xs text-gray-400">{{ $role->identifier }}</span>
-                                    <h4 class="font-medium text-[#313647]">{{ $role->label_en }}</h4>
+                                    <h4 class="font-medium text-[#313647]">
+                                        <a href="{{ route('player-roles.show', $role) }}" class="hover:text-[#435663] transition-colors">
+                                            {{ $role->label_en }}
+                                        </a>
+                                    </h4>
                                     @if ($role->description_en)
                                         <p class="text-[#435663] text-sm mt-1">{{ Str::limit($role->description_en, 200) }}</p>
                                     @endif

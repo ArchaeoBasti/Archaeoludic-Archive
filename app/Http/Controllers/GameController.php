@@ -10,6 +10,8 @@ use App\Models\Period;
 use App\Models\Place;
 use App\Models\GameplayMode;
 use App\Models\PlayerRole;
+use App\Models\Trope;
+use App\Models\Person;
 
 class GameController extends Controller
 {
@@ -93,7 +95,7 @@ class GameController extends Controller
                 'updated_at' => now(),
             ]);
 
-        return redirect(url('/games'));
+        return redirect()->route('games.show', $id);
     }
 
     public function igdbSearch(Request $request, IgdbService $igdbService)
@@ -289,10 +291,10 @@ class GameController extends Controller
         // First delete related records (only the links, not the actual developers/literature)
         DB::table('1_game_developer')->where('game_id', $id)->delete();
         DB::table('1_literature')->where('game_id', $id)->delete();
-        DB::table('1_game_period')->where('game_id', $id)->delete();
-        DB::table('1_game_place')->where('game_id', $id)->delete();
-        DB::table('1_game_gameplay_mode')->where('game_id', $id)->delete();
-        DB::table('1_game_player_role')->where('game_id', $id)->delete();
+        DB::table('3_pivot_game_period')->where('game_id', $id)->delete();
+        DB::table('3_pivot_game_place')->where('game_id', $id)->delete();
+        DB::table('3_pivot_game_gameplay_mode')->where('game_id', $id)->delete();
+        DB::table('3_pivot_game_player_role')->where('game_id', $id)->delete();
 
         // Then delete the game
         DB::table('1_games')->where('game_id', $id)->delete();
@@ -319,28 +321,40 @@ class GameController extends Controller
             ->get();
 
         // Vocabulary data
-        $periods = DB::table('1_game_period')
-            ->join('2_periods', '1_game_period.period_id', '=', '2_periods.id')
-            ->where('1_game_period.game_id', $id)
+        $periods = DB::table('3_pivot_game_period')
+            ->join('2_periods', '3_pivot_game_period.period_id', '=', '2_periods.id')
+            ->where('3_pivot_game_period.game_id', $id)
             ->select('2_periods.*')
             ->get();
 
-        $places = DB::table('1_game_place')
-            ->join('2_places', '1_game_place.place_id', '=', '2_places.id')
-            ->where('1_game_place.game_id', $id)
+        $places = DB::table('3_pivot_game_place')
+            ->join('2_places', '3_pivot_game_place.place_id', '=', '2_places.id')
+            ->where('3_pivot_game_place.game_id', $id)
             ->select('2_places.*')
             ->get();
 
-        $gameplayModes = DB::table('1_game_gameplay_mode')
-            ->join('2_gameplay_modes', '1_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
-            ->where('1_game_gameplay_mode.game_id', $id)
+        $gameplayModes = DB::table('3_pivot_game_gameplay_mode')
+            ->join('2_gameplay_modes', '3_pivot_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
+            ->where('3_pivot_game_gameplay_mode.game_id', $id)
             ->select('2_gameplay_modes.*')
             ->get();
 
-        $playerRoles = DB::table('1_game_player_role')
-            ->join('2_player_roles', '1_game_player_role.player_role_id', '=', '2_player_roles.id')
-            ->where('1_game_player_role.game_id', $id)
+        $playerRoles = DB::table('3_pivot_game_player_role')
+            ->join('2_player_roles', '3_pivot_game_player_role.player_role_id', '=', '2_player_roles.id')
+            ->where('3_pivot_game_player_role.game_id', $id)
             ->select('2_player_roles.*')
+            ->get();
+
+        $tropes = DB::table('3_pivot_game_trope')
+            ->join('2_tropes', '3_pivot_game_trope.trope_id', '=', '2_tropes.id')
+            ->where('3_pivot_game_trope.game_id', $id)
+            ->select('2_tropes.*')
+            ->get();
+
+        $persons = DB::table('3_pivot_game_person')
+            ->join('2_persons', '3_pivot_game_person.person_id', '=', '2_persons.id')
+            ->where('3_pivot_game_person.game_id', $id)
+            ->select('2_persons.*')
             ->get();
 
         // IGDB data
@@ -354,7 +368,7 @@ class GameController extends Controller
         $zoteroIds = $literature->pluck('zotero_id')->implode(', ');
         $game->citations = $this->buildCitations($zoteroIds, $zoteroService);
 
-        return view('games.show', compact('game', 'developers', 'literature', 'periods', 'places', 'gameplayModes', 'playerRoles'));
+        return view('games.show', compact('game', 'developers', 'literature', 'periods', 'places', 'gameplayModes', 'playerRoles', 'tropes', 'persons'));
     }
 
     public function edit($id)
@@ -374,32 +388,46 @@ class GameController extends Controller
         $allDevelopers = DB::table('1_developer')->orderBy('name')->get();
 
         $literature = DB::table('1_literature')
+            ->leftJoin('zotero_cache', '1_literature.zotero_id', '=', 'zotero_cache.item_key')
             ->where('game_id', $id)
+            ->select('1_literature.*', 'zotero_cache.authors', 'zotero_cache.year', 'zotero_cache.citation')
             ->get();
 
         // Current vocabulary assignments
-        $periods = DB::table('1_game_period')
-            ->join('2_periods', '1_game_period.period_id', '=', '2_periods.id')
-            ->where('1_game_period.game_id', $id)
+        $periods = DB::table('3_pivot_game_period')
+            ->join('2_periods', '3_pivot_game_period.period_id', '=', '2_periods.id')
+            ->where('3_pivot_game_period.game_id', $id)
             ->select('2_periods.*')
             ->get();
 
-        $places = DB::table('1_game_place')
-            ->join('2_places', '1_game_place.place_id', '=', '2_places.id')
-            ->where('1_game_place.game_id', $id)
+        $places = DB::table('3_pivot_game_place')
+            ->join('2_places', '3_pivot_game_place.place_id', '=', '2_places.id')
+            ->where('3_pivot_game_place.game_id', $id)
             ->select('2_places.*')
             ->get();
 
-        $gameplayModes = DB::table('1_game_gameplay_mode')
-            ->join('2_gameplay_modes', '1_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
-            ->where('1_game_gameplay_mode.game_id', $id)
+        $gameplayModes = DB::table('3_pivot_game_gameplay_mode')
+            ->join('2_gameplay_modes', '3_pivot_game_gameplay_mode.gameplay_mode_id', '=', '2_gameplay_modes.id')
+            ->where('3_pivot_game_gameplay_mode.game_id', $id)
             ->select('2_gameplay_modes.*')
             ->get();
 
-        $playerRoles = DB::table('1_game_player_role')
-            ->join('2_player_roles', '1_game_player_role.player_role_id', '=', '2_player_roles.id')
-            ->where('1_game_player_role.game_id', $id)
+        $playerRoles = DB::table('3_pivot_game_player_role')
+            ->join('2_player_roles', '3_pivot_game_player_role.player_role_id', '=', '2_player_roles.id')
+            ->where('3_pivot_game_player_role.game_id', $id)
             ->select('2_player_roles.*')
+            ->get();
+
+        $tropes = DB::table('3_pivot_game_trope')
+            ->join('2_tropes', '3_pivot_game_trope.trope_id', '=', '2_tropes.id')
+            ->where('3_pivot_game_trope.game_id', $id)
+            ->select('2_tropes.*')
+            ->get();
+
+        $persons = DB::table('3_pivot_game_person')
+            ->join('2_persons', '3_pivot_game_person.person_id', '=', '2_persons.id')
+            ->where('3_pivot_game_person.game_id', $id)
+            ->select('2_persons.*')
             ->get();
 
         // All vocabulary options
@@ -407,6 +435,8 @@ class GameController extends Controller
         $allPlaces = Place::with('children.children')->whereNull('parent_id')->orderBy('label_en')->get();
         $allGameplayModes = GameplayMode::orderBy('label_en')->get();
         $allPlayerRoles = PlayerRole::orderBy('label_en')->get();
+        $allTropes = Trope::orderBy('label_en')->get();
+        $allPersons = Person::orderBy('label_en')->get();
 
         return view('games.edit', compact(
             'game',
@@ -420,7 +450,11 @@ class GameController extends Controller
             'allPeriods',
             'allPlaces',
             'allGameplayModes',
-            'allPlayerRoles'
+            'allPlayerRoles',
+            'tropes',
+            'persons',
+            'allTropes',
+            'allPersons'
         ));
     }
 
@@ -429,13 +463,13 @@ class GameController extends Controller
     {
         $periodId = $request->input('period_id');
 
-        $exists = DB::table('1_game_period')
+        $exists = DB::table('3_pivot_game_period')
             ->where('game_id', $id)
             ->where('period_id', $periodId)
             ->exists();
 
         if (!$exists) {
-            DB::table('1_game_period')->insert([
+            DB::table('3_pivot_game_period')->insert([
                 'game_id' => $id,
                 'period_id' => $periodId,
                 'created_at' => now(),
@@ -448,7 +482,7 @@ class GameController extends Controller
 
     public function removePeriod($id, $periodId)
     {
-        DB::table('1_game_period')
+        DB::table('3_pivot_game_period')
             ->where('game_id', $id)
             ->where('period_id', $periodId)
             ->delete();
@@ -461,13 +495,13 @@ class GameController extends Controller
     {
         $placeId = $request->input('place_id');
 
-        $exists = DB::table('1_game_place')
+        $exists = DB::table('3_pivot_game_place')
             ->where('game_id', $id)
             ->where('place_id', $placeId)
             ->exists();
 
         if (!$exists) {
-            DB::table('1_game_place')->insert([
+            DB::table('3_pivot_game_place')->insert([
                 'game_id' => $id,
                 'place_id' => $placeId,
                 'created_at' => now(),
@@ -480,7 +514,7 @@ class GameController extends Controller
 
     public function removePlace($id, $placeId)
     {
-        DB::table('1_game_place')
+        DB::table('3_pivot_game_place')
             ->where('game_id', $id)
             ->where('place_id', $placeId)
             ->delete();
@@ -493,13 +527,13 @@ class GameController extends Controller
     {
         $modeId = $request->input('gameplay_mode_id');
 
-        $exists = DB::table('1_game_gameplay_mode')
+        $exists = DB::table('3_pivot_game_gameplay_mode')
             ->where('game_id', $id)
             ->where('gameplay_mode_id', $modeId)
             ->exists();
 
         if (!$exists) {
-            DB::table('1_game_gameplay_mode')->insert([
+            DB::table('3_pivot_game_gameplay_mode')->insert([
                 'game_id' => $id,
                 'gameplay_mode_id' => $modeId,
                 'created_at' => now(),
@@ -512,7 +546,7 @@ class GameController extends Controller
 
     public function removeGameplayMode($id, $modeId)
     {
-        DB::table('1_game_gameplay_mode')
+        DB::table('3_pivot_game_gameplay_mode')
             ->where('game_id', $id)
             ->where('gameplay_mode_id', $modeId)
             ->delete();
@@ -525,13 +559,13 @@ class GameController extends Controller
     {
         $roleId = $request->input('player_role_id');
 
-        $exists = DB::table('1_game_player_role')
+        $exists = DB::table('3_pivot_game_player_role')
             ->where('game_id', $id)
             ->where('player_role_id', $roleId)
             ->exists();
 
         if (!$exists) {
-            DB::table('1_game_player_role')->insert([
+            DB::table('3_pivot_game_player_role')->insert([
                 'game_id' => $id,
                 'player_role_id' => $roleId,
                 'created_at' => now(),
@@ -544,7 +578,7 @@ class GameController extends Controller
 
     public function removePlayerRole($id, $roleId)
     {
-        DB::table('1_game_player_role')
+        DB::table('3_pivot_game_player_role')
             ->where('game_id', $id)
             ->where('player_role_id', $roleId)
             ->delete();
@@ -587,5 +621,69 @@ class GameController extends Controller
             return ($a['year'] ?? '0') <=> ($b['year'] ?? '0');
         });
         return $citationData;
+    }
+
+    // Trope methods
+    public function addTrope(Request $request, $id)
+    {
+        $tropeId = $request->input('trope_id');
+
+        $exists = DB::table('3_pivot_game_trope')
+            ->where('game_id', $id)
+            ->where('trope_id', $tropeId)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('3_pivot_game_trope')->insert([
+                'game_id' => $id,
+                'trope_id' => $tropeId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removeTrope($id, $tropeId)
+    {
+        DB::table('3_pivot_game_trope')
+            ->where('game_id', $id)
+            ->where('trope_id', $tropeId)
+            ->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Person methods
+    public function addPerson(Request $request, $id)
+    {
+        $personId = $request->input('person_id');
+
+        $exists = DB::table('3_pivot_game_person')
+            ->where('game_id', $id)
+            ->where('person_id', $personId)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('3_pivot_game_person')->insert([
+                'game_id' => $id,
+                'person_id' => $personId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removePerson($id, $personId)
+    {
+        DB::table('3_pivot_game_person')
+            ->where('game_id', $id)
+            ->where('person_id', $personId)
+            ->delete();
+
+        return response()->json(['success' => true]);
     }
 }

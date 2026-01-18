@@ -43,7 +43,11 @@
                             <div class="flex justify-between items-start p-4 bg-gray-50 rounded-lg border border-gray-200">
                                 <div>
                                     <span class="text-xs text-gray-400">{{ $mode->identifier }}</span>
-                                    <h4 class="font-medium text-[#313647]">{{ $mode->label_en }}</h4>
+                                    <h4 class="font-medium text-[#313647]">
+                                        <a href="{{ route('gameplay-modes.show', $mode) }}" class="hover:text-[#435663] transition-colors">
+                                            {{ $mode->label_en }}
+                                        </a>
+                                    </h4>
                                     @if ($mode->description_en)
                                         <p class="text-[#435663] text-sm mt-1">{{ Str::limit($mode->description_en, 200) }}</p>
                                     @endif

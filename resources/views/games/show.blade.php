@@ -179,6 +179,36 @@
                                         </div>
                                     @endif
 
+                                    <!-- Tropes Section -->
+                                    @if ($tropes->count() > 0)
+                                    <div class="mb-3">
+                                        <span class="text-sm font-medium text-[#435663]">Tropes:</span>
+                                        <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                    @foreach ($tropes as $trope)
+                                                        <a href="{{ route('tropes.show', $trope->id) }}"
+                                                           class="inline-flex items-center bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200 transition-colors">
+                                                            {{ $trope->label_en }}
+                                                        </a>
+                                                    @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Historical Persons Section -->
+                                    @if ($persons->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Historical Persons:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                          @foreach ($persons as $person)
+                                                              <a href="{{ route('persons.show', $person->id) }}"
+                                                                 class="inline-flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition-colors">
+                                                                  <span class="font-medium text-[#313647]">{{ $person->label_en }}</span>
+                                                              </a>
+                                                          @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <!-- Gameplay Modes -->
                                     @if ($gameplayModes->count() > 0)
                                         <div class="mb-3">

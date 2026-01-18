@@ -42,6 +42,12 @@
                                 <a href="{{ route('player-roles.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     Player Roles
                                 </a>
+                                <a href="{{ route('tropes.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Tropes
+                                </a>
+                                <a href="{{ route('persons.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Historical Persons
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -139,6 +145,12 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('player-roles.index')" :active="request()->routeIs('player-roles.*')">
                     {{ __('Player Roles') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('tropes.index')" :active="request()->routeIs('tropes.*')">
+                    {{ __('Tropes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('persons.index')" :active="request()->routeIs('persons.*')">
+                    {{ __('Historical Persons') }}
                 </x-responsive-nav-link>
             </div>
 

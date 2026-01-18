@@ -115,7 +115,10 @@
                                 <span class="flex items-center gap-3">
                                     {{ $period->label_en }}
                                     <span class="text-sm font-normal text-gray-500">
-                                        ({{ $period->children->count() + 1 }} {{ $period->children->count() + 1 === 1 ? 'entry' : 'entries' }})
+                                        @php
+                                            $totalCount = 1 + $period->children->count() + $period->children->sum(fn($child) => $child->children->count());
+                                        @endphp
+                                        ({{ $totalCount }} {{ $totalCount === 1 ? 'entry' : 'entries' }})
                                     </span>
                                 </span>
                                 <svg
@@ -328,7 +331,8 @@
                         level: {{ $p->parent_id ? ($p->parent->parent_id ? 2 : 1) : 0 }},
                         parentId: {{ $p->parent_id ?? 'null' }},
                         url: "{{ route('periods.show', $p) }}",
-                        identifier: "{{ $p->identifier }}"
+                        identifier: "{{ $p->identifier }}",
+                        color: "{{ $p->color }}"
                     },
                     @endif
                 @endforeach
@@ -419,7 +423,8 @@
                 const rowHeight = 12;
                 const rowGap = 2;
                 const groupGap = 14;
-                const topPadding = 15;
+                const labelHeight = 14;
+                const topPadding = 8;
                 const axisHeight = 30;
                 const axisPadding = 50;
 
@@ -462,7 +467,10 @@
                 const groupLayouts = [];
 
                 groups.forEach(group => {
-                    const layout = { topLevelTop: currentTop };
+                    const layout = { labelTop: currentTop };
+                    currentTop += labelHeight;
+
+                    layout.topLevelTop = currentTop;
 
                     // Top level always 1 row
                     currentTop += rowHeight + rowGap;
@@ -535,15 +543,22 @@
                 // Render each group
                 groups.forEach((group, groupIndex) => {
                     const layout = groupLayouts[groupIndex];
-                    const color = colors[group.colorIndex % colors.length];
+                    const color = group.topLevel.color || colors[group.colorIndex % colors.length];
                     const borderColor = '#FFF8D4';
 
-                    // Render top-level
+                    // Render top-level label
                     const topLevel = group.topLevel;
                     const tlStartPos = yearToPercent(topLevel.displayStart);
                     const tlEndPos = yearToPercent(topLevel.displayEnd);
                     const tlWidth = Math.max(tlEndPos - tlStartPos, 0.3);
 
+                    html += `<div
+                        class="absolute text-xs font-medium text-[#313647] truncate pointer-events-none"
+                        style="left: ${tlStartPos}%; width: ${tlWidth}%; top: ${layout.labelTop}px; height: ${labelHeight}px; line-height: ${labelHeight}px; padding-left: 2px;"
+                        title="${topLevel.label}"
+                    >${topLevel.label}</div>`;
+
+                    // Render top-level bar
                     html += `<a href="${topLevel.url}"
                         class="timeline-bar absolute rounded cursor-pointer block"
                         style="left: ${tlStartPos}%; width: ${tlWidth}%; height: ${rowHeight}px; top: ${layout.topLevelTop}px; background-color: ${color}; border: 1px solid ${borderColor}; box-sizing: border-box;"

@@ -37,9 +37,9 @@
                                 @foreach ($playerRole->games as $game)
                                     <a href="{{ route('games.show', $game->game_id) }}" class="group">
                                         <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                                            @if ($game->igdb_id)
+                                            @if ($game->igdb && $game->igdb->cover_url)
                                                 <div class="aspect-[3/4] bg-gray-200">
-                                                    <img src="https://images.igdb.com/igdb/image/upload/t_cover_big/{{ $game->igdb_id }}.jpg"
+                                                    <img src="{{ $game->igdb->cover_url }}"
                                                          alt="{{ $game->title }}"
                                                          class="w-full h-full object-cover"
                                                          onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400 text-xs p-2 text-center\'>{{ $game->title }}</div>'">

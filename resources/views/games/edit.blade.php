@@ -175,9 +175,9 @@
                             <div class="mb-4" id="literature-list">
                                 @forelse ($literature as $lit)
                                     <div class="flex justify-between items-center py-2 border-b border-gray-200" id="lit-row-{{ $lit->literature_id }}">
-                                        <div>
-                                            <span class="font-medium text-[#313647]">{{ $lit->zotero_id }}</span>
-                                        </div>
+                                      <div>
+                                          <span class="font-medium text-[#313647]">{{ $lit->authors ?? '' }} {{ $lit->year ? '(' . $lit->year . ')' : '' }} [{{ $lit->zotero_id }}]</span>
+                                      </div>
                                         <button type="button" onclick="removeLiterature({{ $lit->literature_id }})" class="text-red-600 hover:text-red-800">
                                             ✕
                                         </button>
@@ -296,7 +296,7 @@
                             </div>
 
                             <!-- Player Roles -->
-                            <div>
+                            <div class="mb-6">
                                 <h4 class="text-md font-medium text-[#435663] mb-2">Player Roles</h4>
                                 <div class="mb-2" id="player-roles-list">
                                     @forelse ($playerRoles as $role)
@@ -316,6 +316,68 @@
                                         @endforeach
                                     </select>
                                     <button type="button" onclick="addPlayerRole()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tropes -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Tropes</h4>
+                                <div class="mb-2" id="current-tropes">
+                                    @forelse ($tropes as $trope)
+                                        <div class="inline-flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" data-trope-id="{{ $trope->id }}">
+                                            <span>{{ $trope->label_en }}</span>
+                                            <button type="button" onclick="removeTrope({{ $trope->id }})" class="ml-2 text-purple-600 hover:text-purple-800">✕</button>
+                                        </div>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-tropes">No tropes assigned</p>
+                                    @endforelse
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="trope-select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Trope --</option>
+                                        @foreach ($allTropes as $trope)
+                                            <option value="{{ $trope->id }}">{{ $trope->label_en }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" onclick="addTrope()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Historical Persons -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium text-[#435663] mb-2">Historical Persons</h4>
+                                <div class="mb-2" id="current-persons">
+                                    @forelse ($persons as $person)
+                                        <div class="inline-flex items-center bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm mr-2 mb-2" data-person-id="{{ $person->id }}">
+                                            <span>
+                                                {{ $person->label_en }}
+                                                @if ($person->birth_year || $person->death_year)
+                                                    ({{ $person->birth_year < 0 ? abs($person->birth_year) . ' BCE' : $person->birth_year ?? '?' }} – {{ $person->death_year < 0 ? abs($person->death_year) . ' BCE' : $person->death_year ?? '?' }})
+                                                @endif
+                                            </span>
+                                            <button type="button" onclick="removePerson({{ $person->id }})" class="ml-2 text-amber-600 hover:text-amber-800">✕</button>
+                                        </div>
+                                    @empty
+                                        <p class="text-gray-400 text-sm" id="no-persons">No historical persons assigned</p>
+                                    @endforelse
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="person-select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <option value="">-- Select Person --</option>
+                                        @foreach ($allPersons as $person)
+                                            <option value="{{ $person->id }}">
+                                                {{ $person->label_en }}
+                                                @if ($person->birth_year || $person->death_year)
+                                                    ({{ $person->birth_year < 0 ? abs($person->birth_year) . ' BCE' : $person->birth_year ?? '?' }} – {{ $person->death_year < 0 ? abs($person->death_year) . ' BCE' : $person->death_year ?? '?' }})
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" onclick="addPerson()" class="px-4 py-2 bg-[#A3B087] text-[#313647] font-semibold rounded-lg hover:bg-[#FFF8D4] transition-colors">
                                         Add
                                     </button>
                                 </div>
@@ -345,7 +407,6 @@
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -864,6 +925,90 @@
             } catch (error) {
                 alert('Error deleting game');
             }
+        }
+
+        // Trope functions
+        function addTrope() {
+            const select = document.getElementById('trope-select');
+            const tropeId = select.value;
+            const tropeName = select.options[select.selectedIndex].text.replace(/^— /, '');
+
+            if (!tropeId) return;
+
+            fetch(`{{ url('/games') }}/{{ $game->game_id }}/trope`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({ trope_id: tropeId })
+            }).then(response => {
+                if (response.ok) {
+                    const container = document.getElementById('current-tropes');
+                    const span = document.createElement('span');
+                    span.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800';
+                    span.dataset.tropeId = tropeId;
+                    span.innerHTML = `${tropeName} <button type="button" onclick="removeTrope(${tropeId})" class="ml-2 text-purple-600 hover:text-purple-900">&times;</button>`;
+                    container.appendChild(span);
+                    select.value = '';
+                }
+            });
+        }
+
+        function removeTrope(tropeId) {
+            fetch(`{{ url('/games') }}/{{ $game->game_id }}/trope/${tropeId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                }
+            }).then(response => {
+                if (response.ok) {
+                    const span = document.querySelector(`#current-tropes span[data-trope-id="${tropeId}"]`);
+                    if (span) span.remove();
+                }
+            });
+        }
+
+        // Person functions
+        function addPerson() {
+            const select = document.getElementById('person-select');
+            const personId = select.value;
+            const personName = select.options[select.selectedIndex].text;
+
+            if (!personId) return;
+
+            fetch(`{{ url('/games') }}/{{ $game->game_id }}/person`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({ person_id: personId })
+            }).then(response => {
+                if (response.ok) {
+                    const container = document.getElementById('current-persons');
+                    const span = document.createElement('span');
+                    span.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800';
+                    span.dataset.personId = personId;
+                    span.innerHTML = `${personName} <button type="button" onclick="removePerson(${personId})" class="ml-2 text-amber-600 hover:text-amber-900">&times;</button>`;
+                    container.appendChild(span);
+                    select.value = '';
+                }
+            });
+        }
+
+        function removePerson(personId) {
+            fetch(`{{ url('/games') }}/{{ $game->game_id }}/person/${personId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                }
+            }).then(response => {
+                if (response.ok) {
+                    const span = document.querySelector(`#current-persons span[data-person-id="${personId}"]`);
+                    if (span) span.remove();
+                }
+            });
         }
     </script>
 </x-app-layout>

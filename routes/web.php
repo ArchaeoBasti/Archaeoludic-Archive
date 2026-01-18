@@ -10,6 +10,8 @@ use App\Http\Controllers\PlayerRoleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BibliographyController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\TropeController;
+use App\Http\Controllers\PersonController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -17,6 +19,13 @@ Route::get('/bibliography', [BibliographyController::class, 'index'])->name('bib
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::view('/imprint', 'imprint')->name('imprint');
 Route::view('/privacy', 'privacy')->name('privacy');
+
+// Tropes Routes
+Route::resource('tropes', TropeController::class);
+
+// Persons Routes
+Route::resource('persons', PersonController::class);
+Route::get('/persons/gnd-search', [PersonController::class, 'gndSearch'])->name('persons.gnd-search');
 
 // Vocabulary Routes
 Route::resource('periods', PeriodController::class);
@@ -68,6 +77,14 @@ Route::middleware('auth')->group(function () {
     // Game Vocabulary Routes (Player Roles)
     Route::post('/games/{id}/player-roles', [GameController::class, 'addPlayerRole'])->name('games.addPlayerRole');
     Route::delete('/games/{id}/player-roles/{roleId}', [GameController::class, 'removePlayerRole'])->name('games.removePlayerRole');
+
+    // Trope methods for games
+    Route::post('/games/{id}/trope', [GameController::class, 'addTrope'])->name('games.addTrope');
+    Route::delete('/games/{id}/trope/{tropeId}', [GameController::class, 'removeTrope'])->name('games.removeTrope');
+
+    // Person methods for games
+    Route::post('/games/{id}/person', [GameController::class, 'addPerson'])->name('games.addPerson');
+    Route::delete('/games/{id}/person/{personId}', [GameController::class, 'removePerson'])->name('games.removePerson');
 });
 
 // Diese Route MUSS nach /games/create kommen!

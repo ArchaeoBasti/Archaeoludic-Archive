@@ -37,13 +37,14 @@ class PlayerRoleController extends Controller
 
     public function show(PlayerRole $playerRole)
     {
-        $playerRole->load(['games', 'mappings']);
+        $playerRole->load(['games.igdb', 'alternativeNames']);
 
         return view('player-roles.show', compact('playerRole'));
     }
 
     public function edit(PlayerRole $playerRole)
     {
+        $playerRole->load('alternativeNames');
         return view('player-roles.edit', compact('playerRole'));
     }
 

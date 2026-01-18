@@ -37,13 +37,14 @@ class GameplayModeController extends Controller
 
     public function show(GameplayMode $gameplayMode)
     {
-        $gameplayMode->load(['games', 'mappings']);
+        $gameplayMode->load(['games.igdb', 'alternativeNames']);
 
         return view('gameplay-modes.show', compact('gameplayMode'));
     }
 
     public function edit(GameplayMode $gameplayMode)
     {
+        $gameplayMode->load('alternativeNames');
         return view('gameplay-modes.edit', compact('gameplayMode'));
     }
 
