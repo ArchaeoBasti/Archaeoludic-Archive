@@ -117,6 +117,26 @@
                             </script>
                         </div>
 
+                        <!-- Linked Open Data -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Linked Open Data</h3>
+
+                            @include('partials.lod-field', [
+                                'name' => 'wikidata',
+                                'label' => 'Wikidata',
+                                'value' => old('wikidata_id'),
+                                'mappingValue' => old('wikidata_mapping'),
+                                'mappingTypes' => $mappingTypes,
+                                'urlPrefix' => 'https://www.wikidata.org/wiki/',
+                                'placeholder' => 'e.g. Q11764'
+                            ])
+                        </div>
+
+                        <!-- Alternative Names -->
+                        @include('partials.alternative-names', [
+                            'alternativeNames' => collect([])
+                        ])
+
                         <div class="flex justify-between mt-6">
                             <a href="{{ route('periods.index') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-400 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

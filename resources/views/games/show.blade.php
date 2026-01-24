@@ -123,7 +123,7 @@
                                 </div>
                             @endif
 
-                            <!-- Developers -->
+                            <!-- Developers (from Database) -->
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-[#313647] mb-2">Developers</h3>
                                 @forelse ($developers as $dev)
@@ -144,8 +144,24 @@
                                 @endforelse
                             </div>
 
+                            <!-- Publisher (from IGDB) -->
+                            @if ($game->igdb && $game->igdb->publishers)
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-[#313647] mb-2">Publisher</h3>
+                                    <p class="text-[#435663]">{{ $game->igdb->publishers }}</p>
+                                    <p class="text-xs text-gray-400 mt-2">
+                                        Source:
+                                        @if ($game->igdb->slug)
+                                            <a href="{{ $game->igdb->slug }}" target="_blank" class="hover:underline">IGDB</a>
+                                        @else
+                                            IGDB
+                                        @endif
+                                    </p>
+                                </div>
+                            @endif
+
                             <!-- Vocabulary Section -->
-                            @if ($periods->count() > 0 || $places->count() > 0 || $gameplayModes->count() > 0 || $playerRoles->count() > 0)
+                            @if ($periods->count() > 0 || $places->count() > 0 || $gameplayModes->count() > 0 || $playerRoles->count() > 0 || $tropes->count() > 0 || $persons->count() > 0)
                                 <div class="mb-6">
                                     <h3 class="text-lg font-semibold text-[#313647] mb-3">Classification</h3>
 
@@ -181,15 +197,15 @@
 
                                     <!-- Tropes Section -->
                                     @if ($tropes->count() > 0)
-                                    <div class="mb-3">
-                                        <span class="text-sm font-medium text-[#435663]">Tropes:</span>
-                                        <div class="inline-flex flex-wrap gap-2 ml-2">
-                                                    @foreach ($tropes as $trope)
-                                                        <a href="{{ route('tropes.show', $trope->id) }}"
-                                                           class="inline-flex items-center bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200 transition-colors">
-                                                            {{ $trope->label_en }}
-                                                        </a>
-                                                    @endforeach
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Tropes:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($tropes as $trope)
+                                                    <a href="{{ route('tropes.show', $trope->id) }}"
+                                                       class="inline-flex items-center bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200 transition-colors">
+                                                        {{ $trope->label_en }}
+                                                    </a>
+                                                @endforeach
                                             </div>
                                         </div>
                                     @endif
@@ -199,12 +215,12 @@
                                         <div class="mb-3">
                                             <span class="text-sm font-medium text-[#435663]">Historical Persons:</span>
                                             <div class="inline-flex flex-wrap gap-2 ml-2">
-                                                          @foreach ($persons as $person)
-                                                              <a href="{{ route('persons.show', $person->id) }}"
-                                                                 class="inline-flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition-colors">
-                                                                  <span class="font-medium text-[#313647]">{{ $person->label_en }}</span>
-                                                              </a>
-                                                          @endforeach
+                                                @foreach ($persons as $person)
+                                                    <a href="{{ route('persons.show', $person->id) }}"
+                                                       class="inline-flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition-colors">
+                                                        <span class="font-medium text-[#313647]">{{ $person->label_en }}</span>
+                                                    </a>
+                                                @endforeach
                                             </div>
                                         </div>
                                     @endif
@@ -285,6 +301,61 @@
                                 @else
                                     <span class="text-gray-400">No literature listed</span>
                                 @endif
+                            </div>
+
+                            <!-- Citation Section -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-[#313647] mb-2">Cite This Game</h3>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    @php
+                                        // Build citation components
+                                        // Use developers from database
+                                        $developerNames = $developers->pluck('name')->implode(', ');
+                                        $year = \Carbon\Carbon::parse($game->release_year)->format('Y');
+                                        $title = $game->title;
+                                        $platforms = $game->igdb->platforms ?? null;
+                                        $publisher = $game->igdb->publishers ?? null;
+
+                                        // Build the citation string
+                                        $citationParts = [];
+
+                                        // Developer. (Year).
+                                        if ($developerNames) {
+                                            $citationParts[] = $developerNames . '. (' . $year . ').';
+                                        } else {
+                                            $citationParts[] = '(' . $year . ').';
+                                        }
+
+                                        // Title [Platforms].
+                                        if ($platforms) {
+                                            $citationParts[] = '<em>' . e($title) . '</em> [' . $platforms . '].';
+                                        } else {
+                                            $citationParts[] = '<em>' . e($title) . '</em>.';
+                                        }
+
+                                        // Digital game published by publisher.
+                                        if ($publisher) {
+                                            $citationParts[] = 'Digital game published by ' . $publisher . '.';
+                                        } else {
+                                            $citationParts[] = 'Digital game.';
+                                        }
+
+                                        $citation = implode(' ', $citationParts);
+
+                                        // Plain text version for copying
+                                        $citationPlain = strip_tags(str_replace(['<em>', '</em>'], '', $citation));
+                                    @endphp
+
+                                    <p class="text-[#435663] mb-3" id="citation-text">{!! $citation !!}</p>
+
+                                    <p class="text-xs text-gray-400 mt-3">
+                                        Citation format roughly based on the
+                                        <a href="https://gamestudies.org/0902/submission_guidelines" target="_blank" class="underline hover:text-gray-600">gamestudies.org Submission Guidelines</a>.
+                                        @if (!$developerNames || !$publisher)
+                                            <br><span class="text-amber-600">Note: Some citation fields are missing. Consider adding developer/publisher data.</span>
+                                        @endif
+                                    </p>
+                                </div>
                             </div>
 
                         </div>

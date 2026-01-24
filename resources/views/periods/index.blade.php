@@ -44,7 +44,16 @@
             <div class="bg-white overflow-visible border-y border-gray-200">
                 <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center max-w-7xl mx-auto">
                     <h2 class="font-semibold text-[#313647]">Timeline Overview (10,000 BCE – Today)</h2>
-                    <div class="flex gap-4">
+                    <div class="flex gap-4 items-center">
+                        <!-- Toggle for Sub-Periods -->
+                        <label class="inline-flex items-center cursor-pointer">
+                            <span class="text-sm text-[#435663] mr-2">Sub-Periods</span>
+                            <div class="relative">
+                                <input type="checkbox" id="subPeriodsToggle" class="sr-only peer" onchange="toggleSubPeriods()">
+                                <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#A3B087] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#A3B087]"></div>
+                            </div>
+                        </label>
+                        <span class="text-gray-300">|</span>
                         <button
                             onclick="zoomTimeline('out')"
                             class="text-sm text-[#435663] hover:text-[#313647] px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
@@ -149,7 +158,10 @@
                                             </a>
                                         </h4>
                                         @if ($period->start_year || $period->end_year)
-                                            <p class="text-sm text-[#435663]">
+                                            <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
                                                 @if ($period->start_year)
                                                     {{ $period->start_year < 0 ? abs($period->start_year) . ' BCE' : $period->start_year . ' CE' }}{{ $period->start_uncertain ? '?' : '' }}
                                                 @else
@@ -161,6 +173,15 @@
                                                 @else
                                                     ?
                                                 @endif
+                                            </p>
+                                        @endif
+                                        @if ($period->wikidata_id)
+                                            <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                </svg>
+                                                <span><i>skos:{{ $period->wikidata_mapping ?? 'not defined' }}</i></span>
+                                                <a href="https://www.wikidata.org/wiki/{{ $period->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline">Wikidata ({{ $period->wikidata_id }})</a>
                                             </p>
                                         @endif
                                         @if ($period->description_en)
@@ -187,7 +208,10 @@
                                                         </a>
                                                     </h4>
                                                     @if ($child->start_year || $child->end_year)
-                                                        <p class="text-sm text-[#435663]">
+                                                        <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                            </svg>
                                                             @if ($child->start_year)
                                                                 {{ $child->start_year < 0 ? abs($child->start_year) . ' BCE' : $child->start_year . ' CE' }}{{ $child->start_uncertain ? '?' : '' }}
                                                             @else
@@ -199,6 +223,15 @@
                                                             @else
                                                                 ?
                                                             @endif
+                                                        </p>
+                                                    @endif
+                                                    @if ($child->wikidata_id)
+                                                        <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                            </svg>
+                                                            <span><i>skos:{{ $child->wikidata_mapping ?? 'not defined' }}</i></span>
+                                                            <a href="https://www.wikidata.org/wiki/{{ $child->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline">Wikidata ({{ $child->wikidata_id }})</a>
                                                         </p>
                                                     @endif
                                                     @if ($child->description_en)
@@ -225,7 +258,10 @@
                                                                     </a>
                                                                 </h4>
                                                                 @if ($grandchild->start_year || $grandchild->end_year)
-                                                                    <p class="text-sm text-[#435663]">
+                                                                    <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                                        <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                        </svg>
                                                                         @if ($grandchild->start_year)
                                                                             {{ $grandchild->start_year < 0 ? abs($grandchild->start_year) . ' BCE' : $grandchild->start_year . ' CE' }}{{ $grandchild->start_uncertain ? '?' : '' }}
                                                                         @else
@@ -237,6 +273,15 @@
                                                                         @else
                                                                             ?
                                                                         @endif
+                                                                    </p>
+                                                                @endif
+                                                                @if ($grandchild->wikidata_id)
+                                                                    <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                                        <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                                        </svg>
+                                                                        <span><i>skos:{{ $grandchild->wikidata_mapping ?? 'not defined' }}</i></span>
+                                                                        <a href="https://www.wikidata.org/wiki/{{ $grandchild->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline">Wikidata ({{ $grandchild->wikidata_id }})</a>
                                                                     </p>
                                                                 @endif
                                                                 @if ($grandchild->description_en)
@@ -311,6 +356,10 @@
             #timeline-container {
                 -ms-overflow-style: none;
                 scrollbar-width: none;
+                transition: height 0.3s ease;
+            }
+            #timeline-content {
+                transition: height 0.3s ease;
             }
         </style>
     @endpush
@@ -352,6 +401,7 @@
             let zoomLevel = 1;
             let isDragging = false;
             let startX, scrollLeft;
+            let showSubPeriods = false; // Initially false - only show Level 1
 
             const container = document.getElementById('timeline-container');
             const content = document.getElementById('timeline-content');
@@ -362,6 +412,11 @@
                     return Math.abs(year).toLocaleString() + ' BCE' + suffix;
                 }
                 return year.toLocaleString() + ' CE' + suffix;
+            }
+
+            function toggleSubPeriods() {
+                showSubPeriods = document.getElementById('subPeriodsToggle').checked;
+                renderTimeline();
             }
 
             function renderTimeline() {
@@ -375,8 +430,15 @@
                 const maxYear = new Date().getFullYear();
                 const totalSpan = maxYear - minYear;
 
+                // Filter periods based on showSubPeriods toggle
+                let filteredPeriods = periods;
+                if (!showSubPeriods) {
+                    // Only show Level 0 (top-level) periods
+                    filteredPeriods = periods.filter(p => p.level === 0);
+                }
+
                 // Filter periods that fall within our range
-                const visiblePeriods = periods.filter(p => {
+                const visiblePeriods = filteredPeriods.filter(p => {
                     return p.end >= minYear && p.start <= maxYear;
                 }).map(p => ({
                     ...p,
@@ -405,11 +467,16 @@
 
                 // Build hierarchical groups
                 const groups = topLevelPeriods.map((topLevel, index) => {
-                    const children = visiblePeriods.filter(p => p.parentId === topLevel.id).sort((a, b) => a.displayStart - b.displayStart);
-                    const grandchildren = visiblePeriods.filter(p => {
-                        const parent = periods.find(pp => pp.id === p.parentId);
-                        return parent && parent.parentId === topLevel.id;
-                    }).sort((a, b) => a.displayStart - b.displayStart);
+                    let children = [];
+                    let grandchildren = [];
+
+                    if (showSubPeriods) {
+                        children = visiblePeriods.filter(p => p.parentId === topLevel.id).sort((a, b) => a.displayStart - b.displayStart);
+                        grandchildren = visiblePeriods.filter(p => {
+                            const parent = periods.find(pp => pp.id === p.parentId);
+                            return parent && parent.parentId === topLevel.id;
+                        }).sort((a, b) => a.displayStart - b.displayStart);
+                    }
 
                     return {
                         topLevel,
@@ -475,16 +542,16 @@
                     // Top level always 1 row
                     currentTop += rowHeight + rowGap;
 
-                    // Children with overlap handling
-                    if (group.children.length > 0) {
+                    // Children with overlap handling (only if showSubPeriods)
+                    if (showSubPeriods && group.children.length > 0) {
                         const childRows = calculateRows(group.children);
                         layout.childrenTop = currentTop;
                         layout.childrenRows = childRows.itemRows;
                         currentTop += childRows.rowCount * (rowHeight + rowGap);
                     }
 
-                    // Grandchildren with overlap handling
-                    if (group.grandchildren.length > 0) {
+                    // Grandchildren with overlap handling (only if showSubPeriods)
+                    if (showSubPeriods && group.grandchildren.length > 0) {
                         const grandchildRows = calculateRows(group.grandchildren);
                         layout.grandchildrenTop = currentTop;
                         layout.grandchildrenRows = grandchildRows.itemRows;
@@ -513,6 +580,10 @@
                     html += `<div class="absolute top-0 w-px bg-gray-200" style="left: ${endPercent}%; height: calc(100% - ${axisHeight}px);"></div>`;
                 });
 
+                // Add prominent 0 CE vertical line (thicker, 2px)
+                const zeroCEPercent = yearToPercent(0);
+                html += `<div class="absolute top-0 bg-gray-400" style="left: ${zeroCEPercent}%; width: 2px; height: calc(100% - ${axisHeight}px);"></div>`;
+
                 // Add time axis at bottom
                 html += `<div class="absolute left-0 right-0 h-8 border-t border-gray-300 bg-gray-50" style="bottom: 0;">`;
 
@@ -533,10 +604,14 @@
                     if (pixelPos < axisPadding && year === firstTick) continue;
                     if (pixelPos > contentWidth - axisPadding && year + tickInterval > maxYear) continue;
 
+                    // Make 0 CE tick thicker
+                    const tickWidth = year === 0 ? 'w-0.5' : 'w-px';
+                    const tickColor = year === 0 ? 'bg-gray-500' : 'bg-gray-300';
+
                     html += `<div class="absolute text-xs text-gray-500" style="left: ${pos}%; transform: translateX(-50%); top: 4px;">
                         ${formatYear(year)}
                     </div>`;
-                    html += `<div class="absolute w-px h-2 bg-gray-300" style="left: ${pos}%; top: 0;"></div>`;
+                    html += `<div class="absolute ${tickWidth} h-2 ${tickColor}" style="left: ${pos}%; top: 0;"></div>`;
                 }
                 html += '</div>';
 
@@ -570,8 +645,8 @@
                         onmousemove="moveTooltip(event)"
                     ></a>`;
 
-                    // Render children
-                    if (group.children.length > 0) {
+                    // Render children (only if showSubPeriods)
+                    if (showSubPeriods && group.children.length > 0) {
                         group.children.forEach((child, idx) => {
                             const startPos = yearToPercent(child.displayStart);
                             const endPos = yearToPercent(child.displayEnd);
@@ -592,8 +667,8 @@
                         });
                     }
 
-                    // Render grandchildren
-                    if (group.grandchildren.length > 0) {
+                    // Render grandchildren (only if showSubPeriods)
+                    if (showSubPeriods && group.grandchildren.length > 0) {
                         group.grandchildren.forEach((grandchild, idx) => {
                             const startPos = yearToPercent(grandchild.displayStart);
                             const endPos = yearToPercent(grandchild.displayEnd);

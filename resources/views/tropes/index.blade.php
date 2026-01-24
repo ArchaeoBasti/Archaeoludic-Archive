@@ -21,7 +21,7 @@
                 <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
-                <span class="font-medium">{{ $tropes->count() }} Tropes</span>
+                <span class="font-medium"><span id="visible-count">{{ $tropes->count() }}</span> Tropes</span>
             </div>
         </div>
     </div>
@@ -30,9 +30,49 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg border border-gray-200">
                 <div class="p-6 text-gray-900">
-                    <div class="space-y-4">
+
+                    <!-- Alphabetischer Filter -->
+                    @php
+                        // Sammle alle Anfangsbuchstaben der Tropes
+                        $availableLetters = $tropes->map(function($trope) {
+                            $firstChar = strtoupper(substr($trope->label_en, 0, 1));
+                            return ctype_alpha($firstChar) ? $firstChar : '#';
+                        })->unique()->toArray();
+                    @endphp
+
+                    <div class="mb-6 flex flex-wrap gap-1 justify-center" x-data="{ activeFilter: 'all' }">
+                        <button
+                            @click="activeFilter = 'all'; filterTropes('all')"
+                            :class="activeFilter === 'all' ? 'bg-[#313647] text-[#FFF8D4]' : 'bg-gray-100 text-[#313647] hover:bg-gray-200'"
+                            class="px-3 py-1 rounded text-sm font-medium transition-colors"
+                        >
+                            All
+                        </button>
+                        <button
+                            @click="@if(in_array('#', $availableLetters))activeFilter = '#'; filterTropes('#')@endif"
+                            :class="activeFilter === '#' ? 'bg-[#313647] text-[#FFF8D4]' : ''"
+                            class="px-3 py-1 rounded text-sm font-medium transition-colors {{ in_array('#', $availableLetters) ? 'bg-gray-100 text-[#313647] hover:bg-gray-200' : 'bg-gray-50 text-gray-300 cursor-default' }}"
+                        >
+                            #
+                        </button>
+                        @foreach (range('A', 'Z') as $letter)
+                            <button
+                                @click="@if(in_array($letter, $availableLetters))activeFilter = '{{ $letter }}'; filterTropes('{{ $letter }}')@endif"
+                                :class="activeFilter === '{{ $letter }}' ? 'bg-[#313647] text-[#FFF8D4]' : ''"
+                                class="px-3 py-1 rounded text-sm font-medium transition-colors {{ in_array($letter, $availableLetters) ? 'bg-gray-100 text-[#313647] hover:bg-gray-200' : 'bg-gray-50 text-gray-300 cursor-default' }}"
+                            >
+                                {{ $letter }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <!-- Tropes Liste -->
+                    <div class="space-y-4" id="tropes-list">
                         @foreach ($tropes as $trope)
-                            <div class="flex justify-between items-start p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div
+                                class="trope-item flex justify-between items-start p-4 bg-gray-50 rounded-lg border border-gray-200"
+                                data-label="{{ $trope->label_en }}"
+                            >
                                 <div>
                                     <span class="text-xs text-gray-400">{{ $trope->identifier }}</span>
                                     <h4 class="font-medium text-[#313647]">
@@ -61,6 +101,9 @@
                         @endforeach
                     </div>
 
+                    <!-- Keine Ergebnisse -->
+                    <p id="no-results" class="text-gray-400 hidden">No tropes found for this filter.</p>
+
                     @if ($tropes->isEmpty())
                         <p class="text-gray-400">No tropes defined yet.</p>
                     @endif
@@ -68,4 +111,37 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function filterTropes(filter) {
+            const items = document.querySelectorAll('.trope-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const label = item.dataset.label;
+                const firstChar = label.charAt(0).toUpperCase();
+                let show = false;
+
+                if (filter === 'all') {
+                    show = true;
+                } else if (filter === '#') {
+                    // Zeige numerische Einträge (0-9)
+                    show = /^[0-9]/.test(label);
+                } else {
+                    // Zeige Einträge, die mit dem Buchstaben beginnen
+                    show = firstChar === filter;
+                }
+
+                item.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+
+            // Update Zähler
+            document.getElementById('visible-count').textContent = visibleCount;
+
+            // Zeige "keine Ergebnisse" wenn nichts gefunden
+            const noResults = document.getElementById('no-results');
+            noResults.classList.toggle('hidden', visibleCount > 0);
+        }
+    </script>
 </x-app-layout>

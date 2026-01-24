@@ -41,12 +41,39 @@
             <div class="bg-white overflow-hidden border-x border-gray-200">
                 <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                     <h2 class="font-semibold text-[#313647]">Map Overview</h2>
-                    <button
-                        onclick="resetMapView()"
-                        class="text-sm text-[#435663] hover:text-[#313647] underline"
-                    >
-                        Reset View
-                    </button>
+                    <div class="flex items-center gap-4">
+                        <!-- Map View Toggle -->
+                        <div class="flex items-center gap-2 bg-gray-200 rounded-lg p-1">
+                            <button
+                                id="btn-markers"
+                                onclick="setMapView('markers')"
+                                class="map-view-btn px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 bg-white text-[#313647] shadow-sm"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Markers
+                            </button>
+                            <button
+                                id="btn-heatmap"
+                                onclick="setMapView('heatmap')"
+                                class="map-view-btn px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 text-gray-600 hover:text-[#313647]"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/>
+                                </svg>
+                                Heatmap
+                            </button>
+                        </div>
+                        <button
+                            onclick="resetMapView()"
+                            class="text-sm text-[#435663] hover:text-[#313647] underline"
+                        >
+                            Reset View
+                        </button>
+                    </div>
                 </div>
                 <div id="places-map" class="h-96 w-full"></div>
             </div>
@@ -122,14 +149,24 @@
                                             </a>
                                         </h4>
                                         @if ($place->latitude && $place->longitude)
-                                            <p class="text-sm text-[#435663]">
-                                                <a href="https://www.openstreetmap.org/?mlat={{ $place->latitude }}&mlon={{ $place->longitude }}&zoom=12" target="_blank" class="hover:underline">
-                                                    📍 {{ $place->latitude }}, {{ $place->longitude }}
+                                            <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                </svg>
+                                                <a href="https://www.openstreetmap.org/?mlat={{ $place->latitude }}&mlon={{ $place->longitude }}&zoom=6" target="_blank" class="hover:underline">
+                                                    {{ $place->latitude }}, {{ $place->longitude }}
                                                 </a>
                                             </p>
                                         @endif
                                         @if ($place->tgn_id)
-                                            <a href="https://vocab.getty.edu/page/tgn/{{ $place->tgn_id }}" target="_blank" class="text-sm text-blue-600 hover:underline">TGN: {{ $place->tgn_id }}</a>
+                                            <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                </svg>
+                                                <span><i>skos:{{ $place->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                <a href="https://vocab.getty.edu/page/tgn/{{ $place->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $place->tgn_id }})</a>
+                                            </p>
                                         @endif
                                         @if ($place->description_en)
                                             <p class="text-[#435663] text-sm mt-1">{{ Str::limit($place->description_en, 200) }}</p>
@@ -153,14 +190,24 @@
                                                         </a>
                                                     </h4>
                                                     @if ($child->latitude && $child->longitude)
-                                                        <p class="text-sm text-[#435663]">
-                                                            <a href="https://www.openstreetmap.org/?mlat={{ $child->latitude }}&mlon={{ $child->longitude }}&zoom=12" target="_blank" class="hover:underline">
-                                                                📍 {{ $child->latitude }}, {{ $child->longitude }}
+                                                        <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            </svg>
+                                                            <a href="https://www.openstreetmap.org/?mlat={{ $child->latitude }}&mlon={{ $child->longitude }}&zoom=9" target="_blank" class="hover:underline">
+                                                                {{ $place->latitude }}, {{ $place->longitude }}
                                                             </a>
                                                         </p>
                                                     @endif
                                                     @if ($child->tgn_id)
-                                                        <a href="https://vocab.getty.edu/page/tgn/{{ $child->tgn_id }}" target="_blank" class="text-sm text-blue-600 hover:underline">TGN: {{ $child->tgn_id }}</a>
+                                                        <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                            </svg>
+                                                            <span><i>skos:{{ $child->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                            <a href="https://vocab.getty.edu/page/tgn/{{ $child->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $child->tgn_id }})</a>
+                                                        </p>
                                                     @endif
                                                     @if ($child->description_en)
                                                         <p class="text-[#435663] text-sm mt-1">{{ Str::limit($child->description_en, 200) }}</p>
@@ -175,7 +222,7 @@
                                             @if ($child->children->count() > 0)
                                                 <div class="ml-6 space-y-2">
                                                     @foreach ($child->children->sortBy('label_en') as $grandchild)
-                                                        <div class="flex justify-between items-start p-4 bg-gray-100 rounded-lg border border-gray-200">
+                                                        <div class="flex justify-between items-start p-4 bg-gray-50 rounded-lg border border-gray-200">
                                                             <div>
                                                                 <span class="text-xs text-gray-400">{{ $grandchild->identifier }}</span>
                                                                 <h4 class="font-medium text-[#313647]">
@@ -184,14 +231,24 @@
                                                                     </a>
                                                                 </h4>
                                                                 @if ($grandchild->latitude && $grandchild->longitude)
-                                                                    <p class="text-sm text-[#435663]">
+                                                                    <p class="text-sm text-[#435663] flex items-center gap-1">
+                                                                        <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                                        </svg>
                                                                         <a href="https://www.openstreetmap.org/?mlat={{ $grandchild->latitude }}&mlon={{ $grandchild->longitude }}&zoom=12" target="_blank" class="hover:underline">
-                                                                            📍 {{ $grandchild->latitude }}, {{ $grandchild->longitude }}
+                                                                            {{ $place->latitude }}, {{ $place->longitude }}
                                                                         </a>
                                                                     </p>
                                                                 @endif
                                                                 @if ($grandchild->tgn_id)
-                                                                    <a href="https://vocab.getty.edu/page/tgn/{{ $grandchild->tgn_id }}" target="_blank" class="text-sm text-blue-600 hover:underline">TGN: {{ $grandchild->tgn_id }}</a>
+                                                                    <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                                                        <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                                                        </svg>
+                                                                        <span><i>skos:{{ $grandchild->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                                        <a href="https://vocab.getty.edu/page/tgn/{{ $grandchild->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $grandchild->tgn_id }})</a>
+                                                                    </p>
                                                                 @endif
                                                                 @if ($grandchild->description_en)
                                                                     <p class="text-[#435663] text-sm mt-1">{{ Str::limit($grandchild->description_en, 200) }}</p>
@@ -243,9 +300,14 @@
     @push('scripts')
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <!-- Leaflet.heat Plugin für Heatmap -->
+        <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
         <script>
             let map;
             let markers = [];
+            let markerLayer;
+            let heatLayer;
+            let currentView = 'markers';
             const defaultCenter = [30, 20];
             const defaultZoom = 2;
 
@@ -289,22 +351,24 @@
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 }).addTo(map);
 
-                // Custom marker icon in your color scheme
+                // Custom circle marker icon
                 const customIcon = L.divIcon({
                     className: 'custom-marker',
-                    html: `<svg width="24" height="36" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24c0-6.63-5.37-12-12-12z" fill="#313647"/>
-                        <circle cx="12" cy="12" r="5" fill="#FFF8D4"/>
+                    html: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8" cy="8" r="6" fill="#313647" stroke="#313647" stroke-width="1"/>
+                        <circle cx="8" cy="8" r="4" fill="#FFF8D4"/>
                     </svg>`,
-                    iconSize: [24, 36],
-                    iconAnchor: [12, 36],
-                    popupAnchor: [0, -36]
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8],
+                    popupAnchor: [0, -10]
                 });
+
+                // Create marker layer group
+                markerLayer = L.layerGroup().addTo(map);
 
                 // Add markers for each place
                 places.forEach(place => {
                     const marker = L.marker([place.lat, place.lng], { icon: customIcon })
-                        .addTo(map)
                         .bindPopup(`
                             <div>
                                 <span style="font-size: 11px; color: #9ca3af;">${place.identifier}</span><br>
@@ -312,7 +376,25 @@
                                 <span style="font-size: 13px; color: #6b7280;">${place.lat}, ${place.lng}</span>
                             </div>
                         `);
+                    markerLayer.addLayer(marker);
                     markers.push(marker);
+                });
+
+                // Create heatmap layer (hidden initially)
+                const heatData = places.map(place => [place.lat, place.lng, 1]); // [lat, lng, intensity]
+                heatLayer = L.heatLayer(heatData, {
+                    radius: 25,
+                    blur: 15,
+                    maxZoom: 10,
+                    max: 1.0,
+                    minOpacity: 0.4,
+                    gradient: {
+                        0.0: '#ffffb2',  // Hellgelb (wenige Punkte)
+                        0.25: '#fecc5c', // Gelb-Orange
+                        0.5: '#fd8d3c',  // Orange
+                        0.75: '#f03b20', // Rot-Orange
+                        1.0: '#bd0026'   // Dunkelrot (viele Punkte)
+                    }
                 });
 
                 // Fit bounds if we have markers
@@ -322,7 +404,48 @@
                 }
             });
 
+            function setMapView(view) {
+                currentView = view;
+
+                // Update button styles
+                const btnMarkers = document.getElementById('btn-markers');
+                const btnHeatmap = document.getElementById('btn-heatmap');
+
+                if (view === 'markers') {
+                    btnMarkers.classList.add('bg-white', 'text-[#313647]', 'shadow-sm');
+                    btnMarkers.classList.remove('text-gray-600', 'hover:text-[#313647]');
+                    btnHeatmap.classList.remove('bg-white', 'text-[#313647]', 'shadow-sm');
+                    btnHeatmap.classList.add('text-gray-600', 'hover:text-[#313647]');
+
+                    // Show markers, hide heatmap
+                    if (!map.hasLayer(markerLayer)) {
+                        markerLayer.addTo(map);
+                    }
+                    if (map.hasLayer(heatLayer)) {
+                        map.removeLayer(heatLayer);
+                    }
+                } else {
+                    btnHeatmap.classList.add('bg-white', 'text-[#313647]', 'shadow-sm');
+                    btnHeatmap.classList.remove('text-gray-600', 'hover:text-[#313647]');
+                    btnMarkers.classList.remove('bg-white', 'text-[#313647]', 'shadow-sm');
+                    btnMarkers.classList.add('text-gray-600', 'hover:text-[#313647]');
+
+                    // Show heatmap, hide markers
+                    if (!map.hasLayer(heatLayer)) {
+                        heatLayer.addTo(map);
+                    }
+                    if (map.hasLayer(markerLayer)) {
+                        map.removeLayer(markerLayer);
+                    }
+                }
+            }
+
             function panToLocation(lat, lng) {
+                // Switch to marker view when panning to a location
+                if (currentView !== 'markers') {
+                    setMapView('markers');
+                }
+
                 map.setView([lat, lng], 8, { animate: true });
 
                 // Find and open the marker popup
