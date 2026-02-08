@@ -56,9 +56,13 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Alternative Names</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($place->alternativeNames as $altName)
-                                    <span class="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
-                                        {{ $altName->name }}
-                                        <span class="ml-1 text-xs text-gray-500">({{ $altName->language }})</span>
+                                    <span class="inline-flex items-stretch bg-gray-100 text-gray-800 rounded-sm text-sm overflow-hidden">
+                                        <span class="flex items-center bg-gray-500 text-gray-100 px-2 text-xs">
+                                            {{ strtoupper($altName->language) }}
+                                        </span>
+                                        <span class="px-3 py-1">
+                                            {{ $altName->name }}
+                                        </span>
                                     </span>
                                 @endforeach
                             </div>
@@ -69,7 +73,7 @@
                     @if ($place->parent)
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-[#313647] mb-2">Parent Place</h3>
-                            <a href="{{ route('places.show', $place->parent) }}" class="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition-colors">
+                            <a href="{{ route('places.show', $place->parent) }}" class="inline-flex items-center bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm hover:bg-emerald-200 transition-colors">
                                 {{ $place->parent->label_en }}
                             </a>
                         </div>
@@ -81,7 +85,7 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Sub-Places</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($place->children->sortBy('label_en') as $child)
-                                    <a href="{{ route('places.show', $child) }}" class="inline-flex items-center bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm hover:bg-green-200 transition-colors">
+                                    <a href="{{ route('places.show', $child) }}" class="inline-flex items-center bg-emerald-100 text-emerald-800 px-3 py-2 rounded-full text-sm hover:bg-emerald-200 transition-colors">
                                         {{ $child->label_en }}
                                     </a>
                                 @endforeach
@@ -128,12 +132,10 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Linked Open Data</h3>
                             <div class="space-y-2">
                                 <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                    <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                    </svg>
+                                    <img src="{{ asset('images/the-getty-logo.png') }}" alt="The Getty" class="w-5 h-5">
                                     <span class="text-sm font-medium text-[#313647]">Getty TGN</span>
                                     @if ($place->tgn_mapping)
-                                        <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $place->tgn_mapping }}</span>
+                                        <span class="text-xs font-mono bg-green-200 text-green-800 px-2 py-1 rounded">{{ $place->tgn_mapping }}</span>
                                     @endif
                                     <a href="http://vocab.getty.edu/tgn/{{ $place->tgn_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
                                         {{ $place->tgn_id }}

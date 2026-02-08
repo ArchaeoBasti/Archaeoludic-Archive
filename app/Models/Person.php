@@ -19,12 +19,18 @@ class Person extends Model
         'wikidata_id',
         'wikidata_mapping',
         'birth_year',
+        'birth_year_uncertain',
         'death_year',
+        'death_year_uncertain',
+        'legendary',
     ];
 
     protected $casts = [
         'birth_year' => 'integer',
         'death_year' => 'integer',
+        'birth_year_uncertain' => 'boolean',
+        'death_year_uncertain' => 'boolean',
+        'legendary' => 'boolean',
     ];
 
     public function games(): BelongsToMany
@@ -64,20 +70,22 @@ class Person extends Model
             return null;
         }
 
-        $birth = $this->birth_year ? $this->formatYear($this->birth_year) : '?';
-        $death = $this->death_year ? $this->formatYear($this->death_year) : '?';
+        $birth = $this->birth_year ? $this->formatYear($this->birth_year, $this->birth_year_uncertain) : '?';
+        $death = $this->death_year ? $this->formatYear($this->death_year, $this->death_year_uncertain) : '?';
 
         return "{$birth} – {$death}";
     }
 
     /**
-     * Format year with BCE/CE notation
+     * Format year with BCE/CE notation and uncertainty indicator
      */
-    protected function formatYear(int $year): string
+    protected function formatYear(int $year, bool $uncertain = false): string
     {
+        $prefix = $uncertain ? 'ca. ' : '';
+
         if ($year < 0) {
-            return abs($year) . ' BCE';
+            return $prefix . abs($year) . ' BCE';
         }
-        return (string) $year;
+        return $prefix . (string) $year;
     }
 }

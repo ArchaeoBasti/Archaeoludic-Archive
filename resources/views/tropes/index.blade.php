@@ -80,17 +80,28 @@
                                             {{ $trope->label_en }}
                                         </a>
                                     </h4>
+                                    @if ($trope->tvtropes_url)
+                                        <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                            </svg>
+                                            <span><i>skos:{{ $trope->tvtropes_mapping ?? 'not defined' }}</i></span>
+                                            <a href="{{ $trope->tvtropes_url }}" target="_blank" class="text-blue-600 hover:underline">TV Tropes</a>
+                                        </p>
+                                    @endif
+                                    @if ($trope->wikidata_id)
+                                        <p class="text-sm text-[#435663] flex items-center gap-1 mt-1">
+                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                            </svg>
+                                            <span><i>skos:{{ $trope->wikidata_mapping ?? 'not defined' }}</i></span>
+                                            <a href="https://www.wikidata.org/wiki/{{ $trope->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline">Wikidata</a>
+                                        </p>
+                                    @endif
+
                                     @if ($trope->description_en)
                                         <p class="text-[#435663] text-sm mt-1">{{ Str::limit($trope->description_en, 200) }}</p>
                                     @endif
-                                    <div class="flex gap-4 mt-2">
-                                        @if ($trope->tvtropes_url)
-                                            <a href="{{ $trope->tvtropes_url }}" target="_blank" class="text-xs text-blue-600 hover:underline">TV Tropes</a>
-                                        @endif
-                                        @if ($trope->wikidata_id)
-                                            <a href="https://www.wikidata.org/wiki/{{ $trope->wikidata_id }}" target="_blank" class="text-xs text-blue-600 hover:underline">Wikidata</a>
-                                        @endif
-                                    </div>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     @auth

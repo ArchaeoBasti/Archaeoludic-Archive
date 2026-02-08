@@ -38,7 +38,7 @@
     <!-- Map Section - Hidden on mobile -->
     <div class="hidden md:block bg-gray-100 border-b border-gray-200">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden border-x border-gray-200">
+            <div id="map-container" class="bg-white overflow-hidden border-x border-gray-200">
                 <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                     <h2 class="font-semibold text-[#313647]">Map Overview</h2>
                     <div class="flex items-center gap-4">
@@ -72,6 +72,15 @@
                             class="text-sm text-[#435663] hover:text-[#313647] underline"
                         >
                             Reset View
+                        </button>
+                        <button
+                            onclick="toggleFullscreen()"
+                            class="text-sm text-[#435663] hover:text-[#313647] flex items-center gap-1"
+                            title="Fullscreen"
+                        >
+                            <svg id="fullscreen-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -164,7 +173,7 @@
                                                 <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                                                 </svg>
-                                                <span><i>skos:{{ $place->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                <span><i>skos:{{ $place->tgn_mapping ?? 'not defined' }}</i></span>
                                                 <a href="https://vocab.getty.edu/page/tgn/{{ $place->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $place->tgn_id }})</a>
                                             </p>
                                         @endif
@@ -205,7 +214,7 @@
                                                             <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                                                             </svg>
-                                                            <span><i>skos:{{ $child->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                            <span><i>skos:{{ $child->tgn_mapping ?? 'not defined' }}</i></span>
                                                             <a href="https://vocab.getty.edu/page/tgn/{{ $child->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $child->tgn_id }})</a>
                                                         </p>
                                                     @endif
@@ -246,7 +255,7 @@
                                                                         <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                                                                         </svg>
-                                                                        <span><i>skos:{{ $grandchild->tgn_mapping ?? 'closeMatch' }}</i></span>
+                                                                        <span><i>skos:{{ $grandchild->tgn_mapping ?? 'not defined' }}</i></span>
                                                                         <a href="https://vocab.getty.edu/page/tgn/{{ $grandchild->tgn_id }}" target="_blank" class="text-blue-600 hover:underline">Getty TGN ({{ $grandchild->tgn_id }})</a>
                                                                     </p>
                                                                 @endif
@@ -465,6 +474,34 @@
                     map.setView(defaultCenter, defaultZoom);
                 }
             }
+            
+            function toggleFullscreen() {
+                            const container = document.getElementById('map-container');
+                            const mapElement = document.getElementById('places-map');
+                            const icon = document.getElementById('fullscreen-icon');
+
+                            if (!document.fullscreenElement) {
+                                // Enter fullscreen
+                                container.requestFullscreen().then(() => {
+                                    // Make map take full height in fullscreen
+                                    mapElement.style.height = '100vh';
+                                    // Update icon to exit fullscreen icon
+                                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+                                    // Invalidate map size after transition
+                                    setTimeout(() => map.invalidateSize(), 100);
+                                });
+                            } else {
+                                // Exit fullscreen
+                                document.exitFullscreen().then(() => {
+                                    // Reset map height
+                                    mapElement.style.height = '24rem'; // h-96 = 24rem
+                                    // Update icon back to fullscreen icon
+                                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>';
+                                    // Invalidate map size after transition
+                                    setTimeout(() => map.invalidateSize(), 100);
+                                });
+                            }
+                        }
         </script>
     @endpush
 </x-app-layout>

@@ -96,12 +96,10 @@
                             <div class="space-y-2">
                                 @if ($trope->tvtropes_url)
                                     <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                        <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                        </svg>
+                                        <img src="{{ asset('images/tvtropes_logo.png') }}" alt="TVTropes" class="w-5 h-5">
                                         <span class="text-sm font-medium text-[#313647]">TV Tropes</span>
                                         @if ($trope->tvtropes_mapping)
-                                            <span class="text-xs font-mono bg-purple-100 text-purple-800 px-2 py-1 rounded">{{ $trope->tvtropes_mapping }}</span>
+                                            <span class="text-xs font-mono bg-green-200 text-green-800 px-2 py-1 rounded">{{ $trope->tvtropes_mapping }}</span>
                                         @endif
                                         <a href="{{ $trope->tvtropes_url }}" target="_blank" class="text-blue-600 hover:underline text-sm truncate max-w-md">
                                             {{ $trope->tvtropes_url }}
@@ -113,12 +111,14 @@
                                 @endif
                                 @if ($trope->wikidata_id)
                                     <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                        <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 545" class="w-5 h-5">
+                                          <path d="m 120,545 h 30 V 45 H 120 V 545 z m 60,0 h 90 V 45 H 180 V 545 z M 300,45 V 545 h 90 V 45 h -90 z" fill="#990000"/>
+                                          <path d="m 840,545 h 30 V 45 H 840 V 545 z M 900,45 V 545 h 30 V 45 H 900 z M 420,545 h 30 V 45 H 420 V 545 z M 480,45 V 545 h 30 V 45 h -30 z" fill="#339966"/>
+                                          <path d="m 540,545 h 90 V 45 h -90 V 545 z m 120,0 h 30 V 45 H 660 V 545 z M 720,45 V 545 h 90 V 45 H 720 z" fill="#006699"/>
                                         </svg>
                                         <span class="text-sm font-medium text-[#313647]">Wikidata</span>
                                         @if ($trope->wikidata_mapping)
-                                            <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $trope->wikidata_mapping }}</span>
+                                            <span class="text-xs font-mono bg-green-200 text-green-800 px-2 py-1 rounded">{{ $trope->wikidata_mapping }}</span>
                                         @endif
                                         <a href="https://www.wikidata.org/wiki/{{ $trope->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
                                             {{ $trope->wikidata_id }}

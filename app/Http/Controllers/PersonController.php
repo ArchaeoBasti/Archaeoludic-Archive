@@ -30,6 +30,9 @@ class PersonController extends Controller
             'label_en' => 'required',
             'birth_year' => 'nullable|integer',
             'death_year' => 'nullable|integer',
+            'birth_year_uncertain' => 'boolean',
+            'death_year_uncertain' => 'boolean',
+            'legendary' => 'boolean',
         ]);
 
         $person = Person::create([
@@ -41,7 +44,10 @@ class PersonController extends Controller
             'wikidata_id' => $request->input('wikidata_id'),
             'wikidata_mapping' => $request->input('wikidata_mapping'),
             'birth_year' => $request->input('birth_year'),
+            'birth_year_uncertain' => $request->boolean('birth_year_uncertain'),
             'death_year' => $request->input('death_year'),
+            'death_year_uncertain' => $request->boolean('death_year_uncertain'),
+            'legendary' => $request->boolean('legendary'),
         ]);
 
         // Alternative Names speichern
@@ -83,6 +89,9 @@ class PersonController extends Controller
             'label_en' => 'required',
             'birth_year' => 'nullable|integer',
             'death_year' => 'nullable|integer',
+            'birth_year_uncertain' => 'boolean',
+            'death_year_uncertain' => 'boolean',
+            'legendary' => 'boolean',
         ]);
 
         $person->update([
@@ -94,7 +103,10 @@ class PersonController extends Controller
             'wikidata_id' => $request->input('wikidata_id'),
             'wikidata_mapping' => $request->input('wikidata_mapping'),
             'birth_year' => $request->input('birth_year'),
+            'birth_year_uncertain' => $request->boolean('birth_year_uncertain'),
             'death_year' => $request->input('death_year'),
+            'death_year_uncertain' => $request->boolean('death_year_uncertain'),
+            'legendary' => $request->boolean('legendary'),
         ]);
 
         // Alternative Names aktualisieren

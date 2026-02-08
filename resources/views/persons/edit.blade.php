@@ -52,18 +52,39 @@
                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">{{ $person->description_en }}</textarea>
                             </div>
 
+                            <!-- Legendary Checkbox -->
+                            <div class="mb-6">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="legendary" id="legendary" value="1" {{ $person->legendary ? 'checked' : '' }}
+                                           class="rounded border-gray-300 text-[#A3B087] shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                    <span class="ml-2 text-sm text-[#313647]">
+                                        <strong>Legendary Figure</strong> – This person is mythological or legendary, not historically verified
+                                    </span>
+                                </label>
+                            </div>
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="birth_year" class="block text-sm font-medium text-[#313647]">Birth Year</label>
                                     <input type="number" name="birth_year" id="birth_year" value="{{ $person->birth_year }}"
                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
                                     <p class="text-sm text-[#435663] mt-1">Use negative for BCE</p>
+                                    <label class="flex items-center mt-2">
+                                        <input type="checkbox" name="birth_year_uncertain" id="birth_year_uncertain" value="1" {{ $person->birth_year_uncertain ? 'checked' : '' }}
+                                               class="rounded border-gray-300 text-[#A3B087] shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <span class="ml-2 text-sm text-[#435663]">Date uncertain (ca.)</span>
+                                    </label>
                                 </div>
                                 <div>
                                     <label for="death_year" class="block text-sm font-medium text-[#313647]">Death Year</label>
                                     <input type="number" name="death_year" id="death_year" value="{{ $person->death_year }}"
                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
                                     <p class="text-sm text-[#435663] mt-1">Use negative for BCE</p>
+                                    <label class="flex items-center mt-2">
+                                        <input type="checkbox" name="death_year_uncertain" id="death_year_uncertain" value="1" {{ $person->death_year_uncertain ? 'checked' : '' }}
+                                               class="rounded border-gray-300 text-[#A3B087] shadow-sm focus:border-[#A3B087] focus:ring-[#A3B087]">
+                                        <span class="ml-2 text-sm text-[#435663]">Date uncertain (ca.)</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -120,7 +141,6 @@
                         <!-- Alternative Names -->
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Alternative Names</h3>
-
                             <div id="alternative-names-container">
                                 @forelse ($person->alternativeNames as $index => $altName)
                                     <div class="alt-name-row grid grid-cols-12 gap-2 mb-2">

@@ -3,3 +3,15 @@
 @tailwind utilities;
 
 [x-cloak] { display: none !important; }
+
+#map-container:fullscreen {
+    background: white;
+}
+
+#map-container:-webkit-fullscreen {
+    background: white;
+}
+
+#map-container:-moz-full-screen {
+    background: white;
+}

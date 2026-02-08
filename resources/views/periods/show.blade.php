@@ -74,10 +74,14 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Alternative Names</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($period->alternativeNames as $altName)
-                                    <span class="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
-                                        {{ $altName->name }}
-                                        <span class="ml-1 text-xs text-gray-500">({{ $altName->language }})</span>
-                                    </span>
+                                  <span class="inline-flex items-stretch bg-gray-100 text-gray-800 rounded-sm text-sm overflow-hidden">
+                                      <span class="flex items-center bg-gray-500 text-gray-100 px-2 text-xs">
+                                          {{ strtoupper($altName->language) }}
+                                      </span>
+                                      <span class="px-3 py-1">
+                                          {{ $altName->name }}
+                                      </span>
+                                  </span>
                                 @endforeach
                             </div>
                         </div>
@@ -87,7 +91,7 @@
                     @if ($period->parent)
                         <div class="mb-8">
                             <h3 class="text-lg font-semibold text-[#313647] mb-2">Parent Period</h3>
-                            <a href="{{ route('periods.show', $period->parent) }}" class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors">
+                            <a href="{{ route('periods.show', $period->parent) }}" class="inline-flex items-center bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm hover:bg-sky-200 transition-colors">
                                 {{ $period->parent->label_en }}
                             </a>
                         </div>
@@ -99,10 +103,10 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Sub-Periods</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($period->children->sortBy('start_year') as $child)
-                                    <a href="{{ route('periods.show', $child) }}" class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm hover:bg-blue-200 transition-colors">
+                                    <a href="{{ route('periods.show', $child) }}" class="inline-flex items-center bg-sky-100 text-sky-800 px-3 py-2 rounded-full text-sm hover:bg-sky-200 transition-colors">
                                         <span>{{ $child->label_en }}</span>
                                         @if ($child->start_year || $child->end_year)
-                                            <span class="ml-2 text-blue-600 text-xs">
+                                            <span class="ml-2 text-sky-800 text-xs">
                                                 ({{ $child->start_year < 0 ? abs($child->start_year) . ' BCE' : $child->start_year }} – {{ $child->end_year < 0 ? abs($child->end_year) . ' BCE' : $child->end_year }})
                                             </span>
                                         @endif
@@ -151,12 +155,14 @@
                             <h3 class="text-lg font-semibold text-[#313647] mb-4 border-b border-[#A3B087] pb-2">Linked Open Data</h3>
                             <div class="space-y-2">
                                 <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                                    <svg class="w-5 h-5 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 545" class="w-5 h-5">
+                                      <path d="m 120,545 h 30 V 45 H 120 V 545 z m 60,0 h 90 V 45 H 180 V 545 z M 300,45 V 545 h 90 V 45 h -90 z" fill="#990000"/>
+                                      <path d="m 840,545 h 30 V 45 H 840 V 545 z M 900,45 V 545 h 30 V 45 H 900 z M 420,545 h 30 V 45 H 420 V 545 z M 480,45 V 545 h 30 V 45 h -30 z" fill="#339966"/>
+                                      <path d="m 540,545 h 90 V 45 h -90 V 545 z m 120,0 h 30 V 45 H 660 V 545 z M 720,45 V 545 h 90 V 45 H 720 z" fill="#006699"/>
                                     </svg>
                                     <span class="text-sm font-medium text-[#313647]">Wikidata</span>
                                     @if ($period->wikidata_mapping)
-                                        <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $period->wikidata_mapping }}</span>
+                                        <span class="text-xs font-mono bg-green-200 text-green-800 px-2 py-1 rounded">{{ $period->wikidata_mapping }}</span>
                                     @endif
                                     <a href="https://www.wikidata.org/wiki/{{ $period->wikidata_id }}" target="_blank" class="text-blue-600 hover:underline text-sm">
                                         {{ $period->wikidata_id }}

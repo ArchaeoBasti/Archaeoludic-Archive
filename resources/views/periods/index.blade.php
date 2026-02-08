@@ -159,8 +159,8 @@
                                         </h4>
                                         @if ($period->start_year || $period->end_year)
                                             <p class="text-sm text-[#435663] flex items-center gap-1">
-                                                <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#435663]">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                 </svg>
                                                 @if ($period->start_year)
                                                     {{ $period->start_year < 0 ? abs($period->start_year) . ' BCE' : $period->start_year . ' CE' }}{{ $period->start_uncertain ? '?' : '' }}
@@ -209,8 +209,8 @@
                                                     </h4>
                                                     @if ($child->start_year || $child->end_year)
                                                         <p class="text-sm text-[#435663] flex items-center gap-1">
-                                                            <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#435663]">
+                                                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                             </svg>
                                                             @if ($child->start_year)
                                                                 {{ $child->start_year < 0 ? abs($child->start_year) . ' BCE' : $child->start_year . ' CE' }}{{ $child->start_uncertain ? '?' : '' }}
@@ -259,8 +259,8 @@
                                                                 </h4>
                                                                 @if ($grandchild->start_year || $grandchild->end_year)
                                                                     <p class="text-sm text-[#435663] flex items-center gap-1">
-                                                                        <svg class="w-4 h-4 text-[#435663]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#435663]">
+                                                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                         </svg>
                                                                         @if ($grandchild->start_year)
                                                                             {{ $grandchild->start_year < 0 ? abs($grandchild->start_year) . ' BCE' : $grandchild->start_year . ' CE' }}{{ $grandchild->start_uncertain ? '?' : '' }}

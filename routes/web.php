@@ -23,9 +23,9 @@ Route::view('/privacy', 'privacy')->name('privacy');
 // Tropes Routes
 Route::resource('tropes', TropeController::class);
 
-// Persons Routes
-Route::resource('persons', PersonController::class);
+// Persons Routes - GND Search MUSS VOR resource() stehen!
 Route::get('/persons/gnd-search', [PersonController::class, 'gndSearch'])->name('persons.gnd-search');
+Route::resource('persons', PersonController::class);
 
 // Vocabulary Routes
 Route::resource('periods', PeriodController::class);

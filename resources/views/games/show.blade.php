@@ -172,7 +172,7 @@
                                             <div class="inline-flex flex-wrap gap-2 ml-2">
                                                 @foreach ($periods as $period)
                                                     <a href="{{ route('periods.show', $period->id) }}"
-                                                       class="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors">
+                                                       class="inline-flex items-center bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-sm hover:bg-sky-200 transition-colors">
                                                         {{ $period->label_en }}
                                                     </a>
                                                 @endforeach
@@ -184,26 +184,30 @@
                                     @if ($places->count() > 0)
                                         <div class="mb-3">
                                             <span class="text-sm font-medium text-[#435663]">Places:</span>
-                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+
+                                            @php
+                                                // Sammle alle Places mit Koordinaten aus dem Spiel
+                                                $placesWithCoords = $places->filter(function($place) {
+                                                    return $place->latitude && $place->longitude;
+                                                });
+                                            @endphp
+
+                                            @if ($placesWithCoords->count() > 0)
+                                                <div class="mb-2">
+                                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                                        <div id="game-places-map" class="h-64 w-full"></div>
+                                                    </div>
+                                                    <p class="text-xs text-gray-400 mt-2">
+                                                        {{ $placesWithCoords->count() }} {{ $placesWithCoords->count() === 1 ? 'location' : 'locations' }} mapped
+                                                    </p>
+                                                </div>
+                                            @endif
+
+                                            <div class="inline-flex flex-wrap gap-2">
                                                 @foreach ($places as $place)
                                                     <a href="{{ route('places.show', $place->id) }}"
-                                                       class="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition-colors">
+                                                       class="inline-flex items-center bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm hover:bg-emerald-200 transition-colors">
                                                         {{ $place->label_en }}
-                                                    </a>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <!-- Tropes Section -->
-                                    @if ($tropes->count() > 0)
-                                        <div class="mb-3">
-                                            <span class="text-sm font-medium text-[#435663]">Tropes:</span>
-                                            <div class="inline-flex flex-wrap gap-2 ml-2">
-                                                @foreach ($tropes as $trope)
-                                                    <a href="{{ route('tropes.show', $trope->id) }}"
-                                                       class="inline-flex items-center bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200 transition-colors">
-                                                        {{ $trope->label_en }}
                                                     </a>
                                                 @endforeach
                                             </div>
@@ -217,8 +221,23 @@
                                             <div class="inline-flex flex-wrap gap-2 ml-2">
                                                 @foreach ($persons as $person)
                                                     <a href="{{ route('persons.show', $person->id) }}"
-                                                       class="inline-flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition-colors">
+                                                       class="inline-flex items-center bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm hover:bg-amber-200 transition-colors">
                                                         <span class="font-medium text-[#313647]">{{ $person->label_en }}</span>
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Tropes Section -->
+                                    @if ($tropes->count() > 0)
+                                        <div class="mb-3">
+                                            <span class="text-sm font-medium text-[#435663]">Tropes:</span>
+                                            <div class="inline-flex flex-wrap gap-2 ml-2">
+                                                @foreach ($tropes as $trope)
+                                                    <a href="{{ route('tropes.show', $trope->id) }}"
+                                                       class="inline-flex items-center bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm hover:bg-rose-200 transition-colors">
+                                                        {{ $trope->label_en }}
                                                     </a>
                                                 @endforeach
                                             </div>
@@ -232,7 +251,7 @@
                                             <div class="inline-flex flex-wrap gap-2 ml-2">
                                                 @foreach ($gameplayModes as $mode)
                                                     <a href="{{ route('gameplay-modes.show', $mode->id) }}"
-                                                       class="inline-flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm hover:bg-purple-200 transition-colors">
+                                                       class="inline-flex items-center bg-violet-100 text-violet-800 px-3 py-1 rounded-full text-sm hover:bg-violet-200 transition-colors">
                                                         {{ $mode->label_en }}
                                                     </a>
                                                 @endforeach
@@ -247,7 +266,7 @@
                                             <div class="inline-flex flex-wrap gap-2 ml-2">
                                                 @foreach ($playerRoles as $role)
                                                     <a href="{{ route('player-roles.show', $role->id) }}"
-                                                       class="inline-flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm hover:bg-orange-200 transition-colors">
+                                                       class="inline-flex items-center bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-sm hover:bg-slate-300 transition-colors">
                                                         {{ $role->label_en }}
                                                     </a>
                                                 @endforeach
@@ -374,4 +393,91 @@
             </div>
         </div>
     </div>
+
+    <!-- Leaflet Map Scripts (nur wenn Places mit Koordinaten existieren) -->
+    @if (isset($placesWithCoords) && $placesWithCoords->count() > 0)
+        @push('styles')
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <style>
+                .custom-marker {
+                    background: transparent;
+                    border: none;
+                }
+                .place-popup-link {
+                    color: #313647;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+                .place-popup-link:hover {
+                    color: #435663;
+                    text-decoration: underline;
+                }
+            </style>
+        @endpush
+
+        @push('scripts')
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+                let map;
+                let markers = [];
+
+                // Places data for this game
+                const places = [
+                    @foreach ($placesWithCoords as $place)
+                    {
+                        id: {{ $place->id }},
+                        label: "{{ addslashes($place->label_en) }}",
+                        lat: {{ $place->latitude }},
+                        lng: {{ $place->longitude }},
+                        url: "{{ route('places.show', $place->id) }}",
+                        identifier: "{{ $place->identifier }}"
+                    },
+                    @endforeach
+                ];
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Initialize map
+                    map = L.map('game-places-map').setView([30, 0], 2);
+
+                    // Add CartoDB Voyager tiles
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    }).addTo(map);
+
+                    // Custom circle marker icon
+                    const customIcon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="8" cy="8" r="6" fill="#313647" stroke="#313647" stroke-width="1"/>
+                            <circle cx="8" cy="8" r="4" fill="#FFF8D4"/>
+                        </svg>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+                        popupAnchor: [0, -10]
+                    });
+
+                    // Add markers for each place
+                    places.forEach(place => {
+                        const marker = L.marker([place.lat, place.lng], { icon: customIcon })
+                            .bindPopup(`
+                                <div>
+                                    <span style="font-size: 11px; color: #9ca3af;">${place.identifier}</span><br>
+                                    <a href="${place.url}" class="place-popup-link">${place.label}</a><br>
+                                    <span style="font-size: 13px; color: #6b7280;">${place.lat}, ${place.lng}</span>
+                                </div>
+                            `);
+                        marker.addTo(map);
+                        markers.push(marker);
+                    });
+
+                    // Fit bounds if we have markers
+                    if (markers.length > 0) {
+                        const group = L.featureGroup(markers);
+                        map.fitBounds(group.getBounds().pad(0.1));
+                    }
+                });
+            </script>
+        @endpush
+    @endif
 </x-app-layout>
