@@ -355,7 +355,7 @@
                 map = L.map('places-map').setView(defaultCenter, defaultZoom);
 
                 // Add CartoDB Voyager tiles
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_2k82_1_3b388b3f61011d96f9b7fa95', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 }).addTo(map);
@@ -474,7 +474,7 @@
                     map.setView(defaultCenter, defaultZoom);
                 }
             }
-            
+
             function toggleFullscreen() {
                             const container = document.getElementById('map-container');
                             const mapElement = document.getElementById('places-map');
